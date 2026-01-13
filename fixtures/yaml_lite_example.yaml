@@ -1,0 +1,56 @@
+# YAML Lite Example
+# This demonstrates the subset we plan to support in v0.1.0
+
+# Simple mapping
+name: mojo-yaml
+version: 0.1.0
+description: YAML Lite parser for Mojo
+
+# Nested mappings
+server:
+  host: localhost
+  port: 8080
+  debug: true
+
+database:
+  name: mydb
+  user: admin
+  max_connections: 100
+
+# Sequences (lists)
+features:
+  - block-style parsing
+  - nested structures
+  - basic types
+  - comments
+
+# Nested sequences
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+# Basic types
+enabled: true
+count: 42
+ratio: 3.14
+empty: null
+message: "quoted string"
+path: /unquoted/path/to/file
+
+# Multi-level nesting
+config:
+  api:
+    endpoints:
+      - name: users
+        path: /api/users
+        methods:
+          - GET
+          - POST
+      - name: posts
+        path: /api/posts
+        methods:
+          - GET

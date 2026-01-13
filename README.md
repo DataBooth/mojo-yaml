@@ -25,9 +25,9 @@ This repository is a **placeholder** for future YAML support. No code has been i
 - 🚧 [mojo-ini](https://github.com/databooth/mojo-ini) - INI parser/writer (v0.1.0 in development)
 - 📋 **mojo-yaml** - Future (this repository)
 
-## Why YAML is Complex (40-60+ days)
+## Why Full YAML is Complex (40-60+ days)
 
-YAML implementation is significantly more complex than INI:
+Full YAML 1.2 implementation is significantly more complex than INI:
 
 - **Indentation-based syntax** (like Python) - complex state tracking
 - **Minimal code reuse** from mojo-toml/mojo-ini
@@ -35,7 +35,7 @@ YAML implementation is significantly more complex than INI:
 - **Security concerns** (anchors/aliases can enable exploits)
 - **Multiple syntax styles** (flow vs block)
 
-**Recommendation:** Consider C library bindings (libyaml) instead of pure Mojo implementation.
+**Strategy:** Start with **YAML Lite** subset (8-11 weeks) covering 90% of real-world use cases, then consider extensions.
 
 ## Planned Features (If Implemented)
 
@@ -76,22 +76,63 @@ var output = dump(data)
 **Type inference** - Implicit typing (bare words, dates, etc.)  
 **Security** - Arbitrary code execution risks in some YAML parsers
 
-## Alternative Approach
+## Planned Approach: YAML Lite
 
-Instead of pure Mojo implementation, consider:
+Instead of implementing full YAML 1.2, start with a **practical subset** covering 90% of common use cases:
+
+### YAML Lite Scope (v0.1.0)
+
+**✅ Supported:**
+- Block style mappings (key: value)
+- Nested structures via indentation
+- Sequences (- item)
+- Strings (quoted and unquoted)
+- Basic types: strings, numbers, booleans, null
+- Comments (#)
+
+**❌ Not Supported Initially:**
+- Anchors & aliases (&anchor, *reference)
+- Flow style ({key: value}, [1, 2, 3])
+- Multi-document streams (---)
+- Complex types (dates, timestamps)
+- Tag directives (%TAG, %YAML)
+
+### Example: Parse .pre-commit-config.yaml
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+```
+
+This covers most config files (pre-commit, GitHub Actions, Docker Compose, etc.)
+
+## Alternative Approaches (Later)
 
 **Option 1:** Wait for Mojo FFI maturity, then bind to libyaml (C library)  
-**Option 2:** Implement YAML subset (no anchors, explicit types only)  
-**Option 3:** Focus on YAML writing only (simpler than parsing)
+**Option 2:** Extend YAML Lite with flow style and anchors  
+**Option 3:** Full YAML 1.2 compliance (12-19 weeks)
 
 ## Timeline (If Prioritized)
 
-**Phase 1 (4-6 weeks):** Basic parser (block style, strings only)  
-**Phase 2 (4-6 weeks):** Type inference, collections, flow style  
-**Phase 3 (2-4 weeks):** Writer implementation  
-**Phase 4 (2-3 weeks):** Anchors/aliases (optional)
+### YAML Lite (Recommended)
+**Phase 1 (3-4 weeks):** Block style parser (mappings, sequences)  
+**Phase 2 (2-3 weeks):** Type inference (strings, numbers, booleans)  
+**Phase 3 (2-3 weeks):** Writer implementation  
+**Phase 4 (1 week):** Real-world testing (.pre-commit-config.yaml, etc.)
 
-**Total:** 12-19 weeks for feature-complete implementation
+**YAML Lite Total:** 8-11 weeks (covers 90% of use cases)
+
+### Full YAML 1.2 (Optional Later)
+**Phase 5 (3-4 weeks):** Flow style syntax  
+**Phase 6 (2-3 weeks):** Anchors & aliases  
+**Phase 7 (1-2 weeks):** Multi-document streams  
+
+**Full YAML Total:** 14-20 weeks
 
 ## Not Planned (Currently)
 
