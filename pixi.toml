@@ -1,0 +1,43 @@
+[workspace]
+authors = ["Michael Booth <michael@databooth.com.au>"]
+channels = ["conda-forge", "https://conda.modular.com/max-nightly"]
+name = "mojo-yaml"
+platforms = ["osx-arm64", "linux-64"]
+version = "0.0.1-placeholder"  # Not yet implemented
+
+[activation]
+env = { MOJO_PATH = "$PIXI_PROJECT_ROOT/src" }
+
+[tasks]
+# Development tasks
+mojo-version = "mojo --version"
+
+# Individual tests (for quick iteration during development)
+test-lexer = "mojo -I src tests/test_lexer.mojo"
+test-parser = "mojo -I src tests/test_parser.mojo"
+test-writer = "mojo -I src tests/test_writer.mojo"
+test-configparser = "mojo -I src tests/test_configparser_compat.mojo"
+
+# Run all tests (auto-discovers test_*.mojo files)
+test-all = "python scripts/run_tests.py"
+
+# Build tasks
+build-package = "mkdir -p dist && mojo package src/yaml -o dist/yaml.mojopkg"
+clean = "rm -rf dist __pycache__ .pytest_cache yaml.mojopkg"
+
+# Example tasks
+example-quickstart = "mojo -I src examples/quickstart.mojo"
+example-simple = "mojo -I src examples/simple.mojo"
+
+# Benchmark tasks
+benchmark-mojo = "python benchmarks/run_mojo_benchmark.py"
+benchmark-python = "python benchmarks/compare_python.py"
+
+# Code quality tasks
+pre-commit = "pre-commit run --all-files"
+pre-commit-install = "pre-commit install"
+
+[dependencies]
+mojo = "*"
+python = ">=3.11"  # Required for test runner and benchmarks
+pre-commit = ">=4.5.1,<5"

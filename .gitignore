@@ -1,0 +1,32 @@
+# Build artifacts
+*.mojopkg
+dist/
+__pycache__/
+.pytest_cache/
+
+# Benchmark reports (machine-specific)
+benchmarks/reports/
+
+# Generated/temporary files
+*.time-trace
+*_output.ini
+
+# Compiled binaries
+parse_config
+example-*
+test-*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pixi
+.pixi/
+pixi.lock
