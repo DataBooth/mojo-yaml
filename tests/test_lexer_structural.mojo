@@ -60,8 +60,8 @@ def test_sequence_with_mapping():
     var lexer = Lexer("- name: Alice\n  age: 30")
     var tokens = lexer.tokenize()
     
-    # - name : Alice \n age : 30 EOF
-    assert_equal(len(tokens), 9)
+    # - name : Alice \n INDENT age : 30 DEDENT EOF
+    assert_equal(len(tokens), 11)
     assert_true(tokens[0].kind == TokenKind.DASH())
     assert_true(tokens[1].kind == TokenKind.STRING())
     assert_equal(tokens[1].value, "name")
@@ -69,11 +69,12 @@ def test_sequence_with_mapping():
     assert_true(tokens[3].kind == TokenKind.STRING())
     assert_equal(tokens[3].value, "Alice")
     assert_true(tokens[4].kind == TokenKind.NEWLINE())
-    assert_true(tokens[5].kind == TokenKind.STRING())
-    assert_equal(tokens[5].value, "age")
-    assert_true(tokens[6].kind == TokenKind.COLON())
-    assert_true(tokens[7].kind == TokenKind.INTEGER())
-    assert_equal(tokens[7].value, "30")
+    assert_true(tokens[5].kind == TokenKind.INDENT())
+    assert_true(tokens[6].kind == TokenKind.STRING())
+    assert_equal(tokens[6].value, "age")
+    assert_true(tokens[7].kind == TokenKind.COLON())
+    assert_true(tokens[8].kind == TokenKind.INTEGER())
+    assert_equal(tokens[8].value, "30")
 
 
 def test_nested_mapping():
@@ -81,17 +82,18 @@ def test_nested_mapping():
     var lexer = Lexer("parent:\n  child: value")
     var tokens = lexer.tokenize()
     
-    # parent : \n child : value EOF
-    assert_equal(len(tokens), 7)
+    # parent : \n INDENT child : value DEDENT EOF
+    assert_equal(len(tokens), 9)
     assert_true(tokens[0].kind == TokenKind.STRING())
     assert_equal(tokens[0].value, "parent")
     assert_true(tokens[1].kind == TokenKind.COLON())
     assert_true(tokens[2].kind == TokenKind.NEWLINE())
-    assert_true(tokens[3].kind == TokenKind.STRING())
-    assert_equal(tokens[3].value, "child")
-    assert_true(tokens[4].kind == TokenKind.COLON())
-    assert_true(tokens[5].kind == TokenKind.STRING())
-    assert_equal(tokens[5].value, "value")
+    assert_true(tokens[3].kind == TokenKind.INDENT())
+    assert_true(tokens[4].kind == TokenKind.STRING())
+    assert_equal(tokens[4].value, "child")
+    assert_true(tokens[5].kind == TokenKind.COLON())
+    assert_true(tokens[6].kind == TokenKind.STRING())
+    assert_equal(tokens[6].value, "value")
 
 
 def test_sequence_spacing_variations():

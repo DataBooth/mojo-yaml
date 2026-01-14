@@ -418,6 +418,35 @@ struct Lexer:
         var tokens = List[Token]()
 
         while self.pos < len(self.input):
+            # Handle indentation at line start
+            if self.at_line_start:
+                var indent_level = self.count_leading_spaces()
+                
+                # Skip blank lines and comment-only lines for indentation tracking
+                var temp_pos = self.pos + indent_level
+                if temp_pos >= len(self.input) or String(self.input[temp_pos]) == "\n" or String(self.input[temp_pos]) == "#":
+                    # Blank or comment line - don't change indentation
+                    self.at_line_start = False
+                else:
+                    # Real content - process indentation change
+                    var current_indent = self.indent_stack[len(self.indent_stack) - 1]
+                    
+                    if indent_level > current_indent:
+                        # Increased indentation - emit INDENT
+                        tokens.append(Token(TokenKind.INDENT(), "", Position(self.line, self.column)))
+                        self.indent_stack.append(indent_level)
+                    elif indent_level < current_indent:
+                        # Decreased indentation - emit DEDENT(s)
+                        while len(self.indent_stack) > 1 and self.indent_stack[len(self.indent_stack) - 1] > indent_level:
+                            tokens.append(Token(TokenKind.DEDENT(), "", Position(self.line, self.column)))
+                            _ = self.indent_stack.pop()
+                        
+                        # Check for indentation mismatch
+                        if len(self.indent_stack) > 0 and self.indent_stack[len(self.indent_stack) - 1] != indent_level:
+                            raise Error("Indentation mismatch at line " + String(self.line))
+                    
+                    self.at_line_start = False
+            
             var c = self.current()
             
             # Skip whitespace (but track for indentation later)
@@ -429,6 +458,7 @@ struct Lexer:
             if c == "\n":
                 tokens.append(Token(TokenKind.NEWLINE(), "\n", Position(self.line, self.column)))
                 _ = self.advance()
+                self.at_line_start = True
                 continue
             
             # Comment
@@ -476,6 +506,11 @@ struct Lexer:
             
             # Unknown character - skip for now (in real impl, should error)
             _ = self.advance()
+        
+        # Emit remaining DEDENT tokens at EOF
+        while len(self.indent_stack) > 1:
+            tokens.append(Token(TokenKind.DEDENT(), "", Position(self.line, self.column)))
+            _ = self.indent_stack.pop()
         
         # Add EOF token
         tokens.append(Token(TokenKind.EOF(), "", Position(self.line, self.column)))
