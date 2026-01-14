@@ -469,7 +469,8 @@ struct Lexer:
                 continue
             
             # Unquoted strings, keys, or keywords (true/false/null/etc.)
-            if self.is_alpha(c) or c == "_" or c == "/" or c == ".":
+            # Also handle '-' that's not a list indicator or negative number
+            if self.is_alpha(c) or c == "_" or c == "/" or c == "." or c == "-":
                 tokens.append(self.scan_unquoted_string())
                 continue
             
