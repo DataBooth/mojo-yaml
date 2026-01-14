@@ -29,10 +29,8 @@ jobs:
       run: pixi run test-all
 
     - name: Run examples
-      run: |
-        pixi run example-simple
-        pixi run example-pixi
+      run: pixi run example-all
 
     - name: Test summary
       if: always()
-      run: echo "✅ All 79 tests passed"
+      run: echo "✅ All 91 tests passed"
