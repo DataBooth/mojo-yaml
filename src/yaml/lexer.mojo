@@ -504,8 +504,9 @@ struct Lexer:
                 tokens.append(self.scan_unquoted_string())
                 continue
             
-            # Unknown character - skip for now (in real impl, should error)
-            _ = self.advance()
+            # Unknown character - raise error
+            raise Error("Unexpected character '" + c + "' at line " + String(self.line) + 
+                       ", column " + String(self.column))
         
         # Emit remaining DEDENT tokens at EOF
         while len(self.indent_stack) > 1:
