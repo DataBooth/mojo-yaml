@@ -123,6 +123,42 @@ struct YamlValue(Copyable, Movable):
         self.sequence_value = List[YamlValue]()
         self.mapping_value = value^
 
+    # Static factory methods
+    @staticmethod
+    fn null() -> YamlValue:
+        """Create a null value."""
+        return YamlValue()
+    
+    @staticmethod
+    fn bool(value: Bool) -> YamlValue:
+        """Create a boolean value."""
+        return YamlValue(value)
+    
+    @staticmethod
+    fn integer(value: Int) -> YamlValue:
+        """Create an integer value."""
+        return YamlValue(value)
+    
+    @staticmethod
+    fn float(value: Float64) -> YamlValue:
+        """Create a float value."""
+        return YamlValue(value)
+    
+    @staticmethod
+    fn string(value: String) -> YamlValue:
+        """Create a string value."""
+        return YamlValue(value)
+    
+    @staticmethod
+    fn sequence(var value: List[YamlValue]) -> YamlValue:
+        """Create a sequence value."""
+        return YamlValue(value^)
+    
+    @staticmethod
+    fn mapping(var value: Dict[String, YamlValue]) -> YamlValue:
+        """Create a mapping value."""
+        return YamlValue(value^)
+
     # Type checking methods
     fn is_null(self) -> Bool:
         """Check if value is null."""
@@ -208,14 +244,18 @@ struct YamlValue(Copyable, Movable):
         return seq_copy^
 
     fn as_mapping(self) raises -> Dict[String, YamlValue]:
-        """Get mapping (dict) value.
+        """Get mapping (dict) value (returns a copy).
         
         Raises:
             Error: If value is not a mapping.
         """
         if not self.is_mapping():
             raise Error("Value is not a mapping")
-        return self.mapping_value
+        # Return a copy
+        var map_copy = Dict[String, YamlValue]()
+        for entry in self.mapping_value.items():
+            map_copy[entry.key] = entry.value.copy()
+        return map_copy^
 
     fn get(self, key: String) raises -> YamlValue:
         """Get value by key from mapping (returns a copy).
