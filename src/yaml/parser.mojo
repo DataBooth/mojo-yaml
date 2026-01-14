@@ -205,13 +205,22 @@ struct Parser:
             
             var token = self.current()
             
-            # Stop at DEDENT or EOF
-            if token.kind == TokenKind.DEDENT() or token.kind == TokenKind.EOF():
+            # Stop at EOF
+            if token.kind == TokenKind.EOF():
+                break
+            
+            # Stop at DEDENT (but we might see DEDENT from nested values that we should skip)
+            if token.kind == TokenKind.DEDENT():
                 break
             
             # Check for dash (sequence at same level - stop here)
             if token.kind == TokenKind.DASH():
                 break
+            
+            # Handle INDENT - this continues the mapping at a deeper level
+            if token.kind == TokenKind.INDENT():
+                _ = self.advance()
+                continue
             
             # Parse key
             if token.kind != TokenKind.STRING():
@@ -279,9 +288,13 @@ struct Parser:
                 if self.current().kind == TokenKind.DEDENT():
                     _ = self.advance()
             else:
-                # Item on same line
+                # Item on same line (but might have nested INDENT internally)
                 var item = self.parse_value()
                 result.append(item^)
+                
+                # If the item had nested content, consume the DEDENT
+                if self.current().kind == TokenKind.DEDENT():
+                    _ = self.advance()
             
             self.skip_newlines()
         
