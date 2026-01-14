@@ -102,10 +102,10 @@ cp -r mojo-yaml/src/yaml your-project/lib/yaml
 mojo -I your-project/lib your_app.mojo
 ```
 
-### Option 3: Magic (Future)
+### Option 3: Pixi (Future)
 
 ```bash
-magic add mojo-yaml  # Not yet available
+pixi add modular-community::mojo-yaml  # After publication to modular-community
 ```
 
 ## Usage
@@ -193,11 +193,20 @@ list: [item1, item2]       # ❌ Flow style not supported
 key:                       # ❌ Empty values fail
 ```
 
-## Real-World Examples
+## Examples
 
-See `fixtures/` directory for working examples:
-- `yaml_lite_working.yaml` - Reference implementation (all features)
+See `examples/` directory for working code:
+- `quickstart.mojo` - Quick start from README
+- `basic_usage.mojo` - Type-safe access patterns  
+- `nested_data.mojo` - Navigate complex structures
+- `read_file.mojo` - Reading YAML from disk
+
+Run with: `pixi run example-quickstart` (or `example-all` for all)
+
+Real-world YAML files in `fixtures/`:
+- `yaml_lite_working.yaml` - Reference implementation
 - `yaml_lite_example.yaml` - Comprehensive demo
+- `pre_commit.yaml` - Actual pre-commit config
 
 For detailed compatibility info, see [COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
@@ -210,6 +219,7 @@ For detailed compatibility info, see [COMPATIBILITY.md](docs/COMPATIBILITY.md).
 ## Related Projects
 
 - [mojo-toml](https://github.com/databooth/mojo-toml) - TOML 1.0 parser/writer for modern configs
+- [mojo-ini](https://github.com/databooth/mojo-ini) - INI/ConfigParser for Mojo  
 - [mojo-dotenv](https://github.com/databooth/mojo-dotenv) - Environment variable management
 
 Together these provide comprehensive configuration file support for Mojo! 🎯
@@ -220,7 +230,7 @@ Contributions welcome! Please:
 1. Follow existing code style (see mojo-toml for reference)
 2. Add tests for new features
 3. Update documentation
-4. Use Australian English for docs, US spelling for code
+4. Australian or US English fine for docs, US spelling for code
 
 ## License
 
@@ -228,4 +238,4 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-Made with 🔥 by [DataBooth](https://github.com/databooth)
+Open source project with initial development sponsored by [DataBooth](https://github.com/databooth) 🔥
