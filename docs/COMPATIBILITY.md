@@ -13,23 +13,28 @@
 
 ## Real-World Fixture Testing Results
 
-### ✅ Works With Modifications
+### ✅ Works Perfectly
 
-**None yet** - All test fixtures require at least one unsupported feature or workaround
+#### yaml_lite_example.yaml
+- **Status:** ✅ WORKS after quoting multi-word strings and version numbers
+- **Patterns used:** Nested mappings, sequences, inline list-mappings, all scalar types
+- **Size:** 740 bytes
+
+#### pre_commit.yaml  
+- **Status:** ✅ WORKS with flow-style arrays converted to block style
+- **Patterns used:** Nested list-mappings (repos → hooks), inline continuation
+- **Note:** Original has `['markdown']` which needs conversion to block style
+
+#### yaml_lite_working.yaml
+- **Status:** ✅ WORKS perfectly as designed
+- **Patterns used:** All supported features without workarounds
+- **Purpose:** Reference implementation for v0.1.0
 
 ### ⚠️ Requires Workarounds
 
-#### yaml_lite_example.yaml
-- **Issue:** Version numbers like `version: 0.1.0` fail
-- **Reason:** Parser treats `0.1` as float, leaving `.0` as invalid token
-- **Workaround:** Quote version numbers: `version: "0.1.0"`
-- **Status:** Core test fixture, should work after quoting versions
-
 #### docker_compose.yaml  
-- **Issue:** Line 35 causes "Unexpected token kind for scalar"
-- **Reason:** Likely empty value or unsupported pattern
-- **Workaround:** Need investigation
-- **Status:** Partially compatible with modifications
+- **Issue:** Empty value handling (e.g., `db-data:` at end)
+- **Status:** Needs explicit `null` or value
 
 ### ❌ Not Compatible
 

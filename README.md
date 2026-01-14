@@ -1,142 +1,205 @@
 # mojo-yaml 🔥
 
-> ⚠️ **PLACEHOLDER REPOSITORY** - This is a future project placeholder. Active development has NOT started.
-> 
-> **Current Status:** Planning / Not Yet Implemented  
-> **Priority:** Low - [mojo-ini](https://github.com/databooth/mojo-ini) takes precedence
->
-> This repository reserves the namespace and documents the planned scope. See [Why YAML is complex](#why-yaml-is-complex-40-60-days) below for context on implementation effort.
-
-**YAML file parser and writer for Mojo** - Planned future implementation
+**YAML Lite parser for Mojo** - Native, zero-dependency YAML reader
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Mojo](https://img.shields.io/badge/Mojo-🔥-orange)](https://www.modular.com/mojo)
-[![Status](https://img.shields.io/badge/Status-Planning-yellow)](https://github.com/DataBooth/mojo-yaml)
+[![Status](https://img.shields.io/badge/Status-v0.1.0%20Lite-brightgreen)](https://github.com/DataBooth/mojo-yaml)
+[![Tests](https://img.shields.io/badge/Tests-91%2F91%20passing-brightgreen)](https://github.com/DataBooth/mojo-yaml)
 
-Parse and write YAML configuration files in native Mojo with zero Python dependencies.
+Parse YAML configuration files in native Mojo with zero Python dependencies.
 
-## Status: 🚧 Placeholder - Not Yet Implemented
+## Status: ✅ v0.1.0 Lite - Functional (Reader Only)
 
-This repository is a **placeholder** for future YAML support. No code has been implemented yet.
+This is a **working YAML Lite parser** covering ~80% of common YAML patterns.
 
-**Active projects:**
-- ✅ [mojo-toml](https://github.com/databooth/mojo-toml) - TOML 1.0 parser/writer (v0.5.0 released)
-- ✅ [mojo-dotenv](https://github.com/databooth/mojo-dotenv) - Environment variables (stable)
-- 🚧 [mojo-ini](https://github.com/databooth/mojo-ini) - INI parser/writer (v0.1.0 in development)
-- 📋 **mojo-yaml** - Future (this repository)
+**Current Capabilities:**
+- ✅ Nested mappings and sequences
+- ✅ Inline list-mappings: `- name: Alice\n  age: 30`  
+- ✅ All scalar types (int, float, bool, null, string)
+- ✅ Comments anywhere
+- ✅ 91/91 tests passing (100%)
+- ✅ Works with real configs (pre-commit, custom YAMLs)
 
-## Why Full YAML is Complex (40-60+ days)
+**Limitations:** See [COMPATIBILITY.md](docs/COMPATIBILITY.md) for details
 
-Full YAML 1.2 implementation is significantly more complex than INI:
-
-- **Indentation-based syntax** (like Python) - complex state tracking
-- **Minimal code reuse** from mojo-toml/mojo-ini
-- **84-page specification** with many edge cases
-- **Security concerns** (anchors/aliases can enable exploits)
-- **Multiple syntax styles** (flow vs block)
-
-**Strategy:** Start with **YAML Lite** subset (8-11 weeks) covering 90% of real-world use cases, then consider extensions.
-
-## Planned Features (If Implemented)
-
-- ⏳ **YAML 1.2 Parser** - Read YAML files
-- ⏳ **YAML Writer** - Write YAML files
-- ⏳ **Indentation handling** - Block style syntax
-- ⏳ **Basic types** - Strings, numbers, booleans, null
-- ⏳ **Collections** - Sequences and mappings
-- ⏳ **Subset implementation** - Core features only (no anchors/aliases initially)
-
-## Hypothetical API (Not Implemented)
+## Quick Start
 
 ```mojo
-from yaml import parse, dump
+from yaml import parse
 
-# Parse YAML
-var data = parse("""
+# Parse YAML string
+var config = parse("""
 server:
   host: localhost
   port: 8080
-database:
-  name: mydb
-  user: admin
+  debug: true
+users:
+  - name: Alice
+    role: admin
+  - name: Bob
+    role: user
 """)
 
-# Access nested data
-print(data["server"]["host"])  # "localhost"
+# Access values with type-safe methods
+var server = config.get("server")
+print(server.get("host").as_string())   # localhost
+print(server.get("port").as_int())      # 8080
+print(server.get("debug").as_bool())    # True
 
-# Write YAML
-var output = dump(data)
+# Navigate nested structures
+var users = config.get("users")
+var first_user = users.get_at(0)
+print(first_user.get("name").as_string())  # Alice
+print(first_user.get("role").as_string())  # admin
 ```
 
-## Implementation Challenges
+## Features
 
-**Indentation parsing** - YAML relies on whitespace for structure  
-**Anchors & Aliases** - `&anchor` and `*reference` syntax adds complexity  
-**Multiple syntaxes** - Flow style `{key: value}` vs block style  
-**Type inference** - Implicit typing (bare words, dates, etc.)  
-**Security** - Arbitrary code execution risks in some YAML parsers
+### ✅ Fully Supported
 
-## Planned Approach: YAML Lite
+- **Nested Mappings**: Any depth, e.g., `server: {nested: {deep: value}}`
+- **Nested Sequences**: Any depth, e.g., `- [- item]`
+- **Inline List-Mappings**: `- name: value\n  key2: value2`
+- **All Scalar Types**: `42`, `3.14`, `true`, `null`, `"string"`
+- **Comments**: `# anywhere in file`
+- **Mixed Structures**: Lists in dicts, dicts in lists
 
-Instead of implementing full YAML 1.2, start with a **practical subset** covering 90% of common use cases:
+### ⚠️ Requires Quoting
 
-### YAML Lite Scope (v0.1.0)
+- **Multi-word strings**: Must use `"Hello world"` not `Hello world`
+- **Version numbers**: Must use `"1.0.0"` not `1.0.0`
+- **Single-word strings work**: `host: localhost` ✅
 
-**✅ Supported:**
-- Block style mappings (key: value)
-- Nested structures via indentation
-- Sequences (- item)
-- Strings (quoted and unquoted)
-- Basic types: strings, numbers, booleans, null
-- Comments (#)
+### ❌ Not Supported (v0.1.0)
 
-**❌ Not Supported Initially:**
-- Anchors & aliases (&anchor, *reference)
-- Flow style ({key: value}, [1, 2, 3])
-- Multi-document streams (---)
-- Complex types (dates, timestamps)
-- Tag directives (%TAG, %YAML)
+- **Flow style**: `[1, 2, 3]` or `{key: value}` → use block style
+- **Empty values**: `key:` → use `key: null` or `key: ""`
+- **Anchors/Aliases**: `&anchor`, `*reference`
+- **Multi-document**: `---` separator
+- **Literal/Folded**: `|`, `>`
+- **Writing YAML**: Reader-only in v0.1.0
 
-### Example: Parse .pre-commit-config.yaml
+## Installation
 
+### Option 1: Git Submodule (Recommended)
+
+```bash
+# Add as submodule
+git submodule add https://github.com/databooth/mojo-yaml vendor/mojo-yaml
+
+# Use in your code
+mojo -I vendor/mojo-yaml/src your_app.mojo
+```
+
+### Option 2: Direct Copy
+
+```bash
+# Copy source files
+cp -r mojo-yaml/src/yaml your-project/lib/yaml
+
+# Use in your code  
+mojo -I your-project/lib your_app.mojo
+```
+
+### Option 3: Magic (Future)
+
+```bash
+magic add mojo-yaml  # Not yet available
+```
+
+## Usage
+
+### Basic Parsing
+
+```mojo
+from yaml import parse
+from pathlib import Path
+
+# From string
+var config = parse("name: value")
+print(config.get("name").as_string())  # value
+
+# From file
+var content = Path("config.yaml").read_text()
+var data = parse(content)
+```
+
+### Type-Safe Access
+
+```mojo
+# Check type before accessing
+if value.is_string():
+    print(value.as_string())
+elif value.is_int():
+    print(value.as_int())
+
+# Or handle errors
+try:
+    var num = value.as_int()
+    print("Got number:", num)
+except:
+    print("Not a number")
+```
+
+### Working with Nested Data
+
+```mojo
+var yaml_str = """
+config:
+  database:
+    host: localhost
+    port: 5432
+  servers:
+    - name: web1
+      ip: 192.168.1.10
+    - name: web2
+      ip: 192.168.1.11
+"""
+
+var data = parse(yaml_str)
+
+# Navigate nested mappings
+var config = data.get("config")
+var db = config.get("database")
+print(db.get("host").as_string())  # localhost
+print(db.get("port").as_int())     # 5432
+
+# Navigate sequences
+var servers = config.get("servers")
+for i in range(len(servers.sequence_value)):
+    var server = servers.get_at(i)
+    print(server.get("name").as_string())
+    print(server.get("ip").as_string())
+```
+
+### Compatibility Tips
+
+**✅ Do:**
 ```yaml
-# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
+version: "1.0.0"           # Quote version numbers
+description: "My app"      # Quote multi-word strings  
+host: localhost            # Single words OK unquoted
+list:
+  - item1                  # Use block style
+  - item2
 ```
 
-This covers most config files (pre-commit, GitHub Actions, Docker Compose, etc.)
+**❌ Don't:**
+```yaml
+version: 1.0.0             # ❌ Multiple dots fail
+description: My app        # ❌ Spaces in unquoted strings
+list: [item1, item2]       # ❌ Flow style not supported  
+key:                       # ❌ Empty values fail
+```
 
-## Alternative Approaches (Later)
+## Real-World Examples
 
-**Option 1:** Wait for Mojo FFI maturity, then bind to libyaml (C library)  
-**Option 2:** Extend YAML Lite with flow style and anchors  
-**Option 3:** Full YAML 1.2 compliance (12-19 weeks)
+See `fixtures/` directory for working examples:
+- `yaml_lite_working.yaml` - Reference implementation (all features)
+- `yaml_lite_example.yaml` - Comprehensive demo
 
-## Timeline (If Prioritized)
-
-### YAML Lite (Recommended)
-**Phase 1 (3-4 weeks):** Block style parser (mappings, sequences)  
-**Phase 2 (2-3 weeks):** Type inference (strings, numbers, booleans)  
-**Phase 3 (2-3 weeks):** Writer implementation  
-**Phase 4 (1 week):** Real-world testing (.pre-commit-config.yaml, etc.)
-
-**YAML Lite Total:** 8-11 weeks (covers 90% of use cases)
-
-### Full YAML 1.2 (Optional Later)
-**Phase 5 (3-4 weeks):** Flow style syntax  
-**Phase 6 (2-3 weeks):** Anchors & aliases  
-**Phase 7 (1-2 weeks):** Multi-document streams  
-
-**Full YAML Total:** 14-20 weeks
-
-## Not Planned (Currently)
-
-No active development is scheduled. This repository serves as namespace reservation and design document.
+For detailed compatibility info, see [COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
 ## Documentation
 
