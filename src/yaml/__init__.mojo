@@ -1,56 +1,56 @@
-"""mojo-yaml: YAML file parser and writer for Mojo.
+"""mojo-yaml: YAML file parser for Mojo.
 
-Python `configparser` compatible YAML file handling with zero dependencies.
+Lite YAML parser supporting block-style mappings and sequences.
 
 Example:
     ```mojo
-    from yaml import parse, to_yaml
+    from yaml import parse
     
-    var config = parse('''
-    [Database]
-    host = localhost
-    port = 5432
-    ''')
+    var config = parse("""
+    database:
+      host: localhost
+      port: 5432
+    """)
     
-    print(config["Database"]["host"])  # "localhost"
+    var db = config.get("database")
+    print(db.get("host").as_string())  # "localhost"
+    print(db.get("port").as_int())      # 5432
     ```
 
 Architecture:
-    - Lexer: Tokenises YAML text (comments, sections, key=value)
-    - Parser: Builds Dict[String, Dict[String, String]] from tokens
-    - Writer: Serialises Dict structure to YAML format
+    - Lexer: Tokenises YAML text with indentation tracking
+    - Parser: Builds nested YamlValue structures from tokens
+    - YamlValue: Variant type supporting null, bool, int, float, string, sequence, mapping
 
-Status: v0.1.0 - In Development
+Status: v0.1.0 - Lexer and Parser complete, nested structures working
 """
 
-# Public API (to be implemented)
-# from .lexer import Lexer, Token, TokenKind
-# from .parser import Parser, parse, parse_file
-# from .writer import Writer, to_yaml, write_file
+from .lexer import Lexer
+from .parser import Parser
+from .value import YamlValue
 
-# Placeholder for yamltial development
-fn parse(content: String) raises -> Dict[String, Dict[String, String]]:
-    """Parse YAML string into nested dictionary.
+
+fn parse(content: String) raises -> YamlValue:
+    """Parse YAML string into YamlValue.
     
     Args:
-        content: YAML formatted string
+        content: YAML formatted string.
     
     Returns:
-        Dict mapping section names to key-value pairs
+        Parsed YamlValue (typically a mapping or sequence).
     
     Raises:
-        Error: If YAML syntax is invalid
-    """
-    raise Error("mojo-yaml v0.1.0 is under development - coming soon!")
-
-
-fn to_yaml(data: Dict[String, Dict[String, String]]) -> String:
-    """Convert nested dictionary to YAML format string.
+        Error: If YAML syntax is invalid.
     
-    Args:
-        data: Dict mapping section names to key-value pairs
-    
-    Returns:
-        YAML formatted string
+    Example:
+        ```mojo
+        var yaml_str = "name: Alice\\nage: 30"
+        var result = parse(yaml_str)
+        print(result.get("name").as_string())  # "Alice"
+        print(result.get("age").as_int())      # 30
+        ```
     """
-    return "[Section]\nkey = value\n"
+    var lexer = Lexer(content)
+    var tokens = lexer.tokenize()
+    var parser = Parser(tokens^)
+    return parser.parse()
