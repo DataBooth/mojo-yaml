@@ -1,0 +1,49 @@
+# YAML Lite Working Example
+# This demonstrates patterns that work in v0.1.0
+
+# Simple mappings
+name: mojo-yaml
+version: "0.1.0"
+description: "YAML Lite parser for Mojo"
+
+# Nested mappings
+server:
+  host: localhost
+  port: 8080
+  debug: true
+
+database:
+  name: mydb
+  user: admin
+  max_connections: 100
+
+# Simple sequences
+features:
+  - "block-style parsing"
+  - "nested structures"  
+  - "basic types"
+  - comments
+
+# Nested sequence (simple items only)
+tags:
+  - yaml
+  - parser
+  - mojo
+
+# Basic types
+enabled: true
+count: 42
+ratio: 3.14
+empty: null
+message: "quoted string"
+path: /unquoted/path
+
+# Multi-level nesting (mappings only)
+config:
+  api:
+    url: /api/v1
+    timeout: 30
+    retry: 3
+  cache:
+    enabled: true
+    ttl: 3600

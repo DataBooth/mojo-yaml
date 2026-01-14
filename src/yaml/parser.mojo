@@ -205,6 +205,12 @@ struct Parser:
             
             var token = self.current()
             
+            # If we see INDENT here, it means continuation of the mapping
+            # Pattern: - key: value\n  key2: value2
+            if token.kind == TokenKind.INDENT():
+                _ = self.advance()  # consume INDENT
+                token = self.current()  # update token
+            
             # Stop at DEDENT or EOF
             if token.kind == TokenKind.DEDENT() or token.kind == TokenKind.EOF():
                 break
@@ -284,5 +290,11 @@ struct Parser:
                 result.append(item^)
             
             self.skip_newlines_and_comments()
+            
+            # If we just parsed an inline mapping that continued with INDENT,
+            # there will be a DEDENT here that closes that indented block.
+            # Consume it so we can continue looking for more list items.
+            if self.current().kind == TokenKind.DEDENT():
+                _ = self.advance()
         
         return YamlValue.sequence(result^)
