@@ -121,9 +121,9 @@ struct Parser:
 
         return self.advance()
     
-    fn skip_newlines(mut self):
-        """Skip over NEWLINE tokens."""
-        while self.current().kind == TokenKind.NEWLINE():
+    fn skip_newlines_and_comments(mut self):
+        """Skip over NEWLINE and COMMENT tokens."""
+        while self.current().kind == TokenKind.NEWLINE() or self.current().kind == TokenKind.COMMENT():
             _ = self.advance()
     
     fn parse(mut self) raises -> YamlValue:
@@ -135,7 +135,7 @@ struct Parser:
         Raises:
             Error: If parsing fails.
         """
-        self.skip_newlines()
+        self.skip_newlines_and_comments()
         
         if self.current().kind == TokenKind.EOF():
             # Empty document
@@ -201,7 +201,7 @@ struct Parser:
         
         # Keep parsing key:value pairs until we hit DEDENT or EOF
         while True:
-            self.skip_newlines()
+            self.skip_newlines_and_comments()
             
             var token = self.current()
             
@@ -223,7 +223,7 @@ struct Parser:
             # Expect colon
             _ = self.expect(TokenKind.COLON())
             
-            self.skip_newlines()
+            self.skip_newlines_and_comments()
             
             # Check if value is on next line (indented)
             if self.current().kind == TokenKind.INDENT():
@@ -239,7 +239,7 @@ struct Parser:
                 var value = self.parse_value()
                 result[key] = value^
             
-            self.skip_newlines()
+            self.skip_newlines_and_comments()
         
         return YamlValue.mapping(result^)
     
@@ -253,7 +253,7 @@ struct Parser:
         
         # Keep parsing list items until we hit DEDENT or EOF
         while True:
-            self.skip_newlines()
+            self.skip_newlines_and_comments()
             
             var token = self.current()
             
@@ -267,7 +267,7 @@ struct Parser:
             
             _ = self.advance()  # consume dash
             
-            self.skip_newlines()
+            self.skip_newlines_and_comments()
             
             # Check if item is on next line (indented)
             if self.current().kind == TokenKind.INDENT():
@@ -283,6 +283,6 @@ struct Parser:
                 var item = self.parse_value()
                 result.append(item^)
             
-            self.skip_newlines()
+            self.skip_newlines_and_comments()
         
         return YamlValue.sequence(result^)
