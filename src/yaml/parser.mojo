@@ -32,8 +32,9 @@ allowing it to determine when to stop collecting items for a mapping or sequence
 - Scalars: Convert tokens to appropriate YamlValue types
 """
 
-from collections import List
+from collections import List, Dict
 from .lexer import Token, TokenKind, Position
+from .value import YamlValue
 
 
 struct Parser:
@@ -55,13 +56,13 @@ struct Parser:
     var tokens: List[Token]
     var pos: Int  # Current position in token stream
 
-    fn __init__(out self, tokens: List[Token]):
+    fn __init__(out self, var tokens: List[Token]):
         """Initialise parser with token stream.
 
         Args:
             tokens: List of tokens from lexer.
         """
-        self.tokens = tokens
+        self.tokens = tokens^
         self.pos = 0
 
     fn current(self) -> Token:
@@ -72,7 +73,7 @@ struct Parser:
         """
         if self.pos >= len(self.tokens):
             return Token(TokenKind.EOF(), "", Position(0, 0))
-        return self.tokens[self.pos]
+        return self.tokens[self.pos].copy()
 
     fn peek(self, offset: Int = 1) -> Token:
         """Look ahead at token without consuming it.
@@ -86,7 +87,7 @@ struct Parser:
         var peek_pos = self.pos + offset
         if peek_pos >= len(self.tokens):
             return Token(TokenKind.EOF(), "", Position(0, 0))
-        return self.tokens[peek_pos]
+        return self.tokens[peek_pos].copy()
 
     fn advance(mut self) -> Token:
         """Consume and return current token.
@@ -97,9 +98,9 @@ struct Parser:
         if self.pos >= len(self.tokens):
             return Token(TokenKind.EOF(), "", Position(0, 0))
 
-        var token = self.tokens[self.pos]
+        var token = self.tokens[self.pos].copy()
         self.pos += 1
-        return token
+        return token^
 
     fn expect(mut self, expected: TokenKind) raises -> Token:
         """Consume token and verify it matches expected kind.
@@ -119,3 +120,169 @@ struct Parser:
                        ", column " + String(token.pos.column))
 
         return self.advance()
+    
+    fn skip_newlines(mut self):
+        """Skip over NEWLINE tokens."""
+        while self.current().kind == TokenKind.NEWLINE():
+            _ = self.advance()
+    
+    fn parse(mut self) raises -> YamlValue:
+        """Parse the token stream into a YamlValue.
+        
+        Returns:
+            Root YamlValue (typically a mapping or sequence).
+        
+        Raises:
+            Error: If parsing fails.
+        """
+        self.skip_newlines()
+        
+        if self.current().kind == TokenKind.EOF():
+            # Empty document
+            return YamlValue.null()
+        
+        return self.parse_value()
+    
+    fn parse_value(mut self) raises -> YamlValue:
+        """Parse a value (scalar, mapping, or sequence).
+        
+        Dispatches to appropriate parsing method based on token type.
+        
+        Returns:
+            Parsed YamlValue.
+        """
+        var token = self.current()
+        
+        # Check if this is a sequence (starts with dash)
+        if token.kind == TokenKind.DASH():
+            return self.parse_sequence()
+        
+        # Check if this is a mapping (key followed by colon)
+        # Look for pattern: STRING/KEY COLON
+        if token.kind == TokenKind.STRING():
+            var next_token = self.peek()
+            if next_token.kind == TokenKind.COLON():
+                return self.parse_mapping()
+        
+        # Otherwise it's a scalar
+        return self.parse_scalar()
+    
+    fn parse_scalar(mut self) raises -> YamlValue:
+        """Parse a scalar value.
+        
+        Returns:
+            YamlValue containing the scalar.
+        """
+        var token = self.advance()
+        
+        if token.kind == TokenKind.NULL():
+            return YamlValue.null()
+        elif token.kind == TokenKind.BOOLEAN():
+            if token.value == "true" or token.value == "yes":
+                return YamlValue.bool(True)
+            else:
+                return YamlValue.bool(False)
+        elif token.kind == TokenKind.INTEGER():
+            return YamlValue.integer(atol(token.value))
+        elif token.kind == TokenKind.FLOAT():
+            return YamlValue.float(atof(token.value))
+        elif token.kind == TokenKind.STRING():
+            return YamlValue.string(token.value)
+        else:
+            raise Error("Unexpected token kind for scalar at line " + String(token.pos.line))
+    
+    fn parse_mapping(mut self) raises -> YamlValue:
+        """Parse a mapping (dictionary).
+        
+        Returns:
+            YamlValue containing mapping.
+        """
+        var result = Dict[String, YamlValue]()
+        
+        # Keep parsing key:value pairs until we hit DEDENT or EOF
+        while True:
+            self.skip_newlines()
+            
+            var token = self.current()
+            
+            # Stop at DEDENT or EOF
+            if token.kind == TokenKind.DEDENT() or token.kind == TokenKind.EOF():
+                break
+            
+            # Check for dash (sequence at same level - stop here)
+            if token.kind == TokenKind.DASH():
+                break
+            
+            # Parse key
+            if token.kind != TokenKind.STRING():
+                raise Error("Expected key at line " + String(token.pos.line))
+            
+            var key = token.value
+            _ = self.advance()
+            
+            # Expect colon
+            _ = self.expect(TokenKind.COLON())
+            
+            self.skip_newlines()
+            
+            # Check if value is on next line (indented)
+            if self.current().kind == TokenKind.INDENT():
+                _ = self.advance()
+                var value = self.parse_value()
+                result[key] = value^
+                
+                # Consume DEDENT after indented value
+                if self.current().kind == TokenKind.DEDENT():
+                    _ = self.advance()
+            else:
+                # Value on same line
+                var value = self.parse_value()
+                result[key] = value^
+            
+            self.skip_newlines()
+        
+        return YamlValue.mapping(result^)
+    
+    fn parse_sequence(mut self) raises -> YamlValue:
+        """Parse a sequence (list).
+        
+        Returns:
+            YamlValue containing sequence.
+        """
+        var result = List[YamlValue]()
+        
+        # Keep parsing list items until we hit DEDENT or EOF
+        while True:
+            self.skip_newlines()
+            
+            var token = self.current()
+            
+            # Stop at DEDENT or EOF
+            if token.kind == TokenKind.DEDENT() or token.kind == TokenKind.EOF():
+                break
+            
+            # Expect dash
+            if token.kind != TokenKind.DASH():
+                break
+            
+            _ = self.advance()  # consume dash
+            
+            self.skip_newlines()
+            
+            # Check if item is on next line (indented)
+            if self.current().kind == TokenKind.INDENT():
+                _ = self.advance()
+                var item = self.parse_value()
+                result.append(item^)
+                
+                # Consume DEDENT after indented item
+                if self.current().kind == TokenKind.DEDENT():
+                    _ = self.advance()
+            else:
+                # Item on same line
+                var item = self.parse_value()
+                result.append(item^)
+            
+            self.skip_newlines()
+        
+        return YamlValue.sequence(result^)
