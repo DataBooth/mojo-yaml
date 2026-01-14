@@ -6,11 +6,7 @@ Example:
     ```mojo
     from yaml import parse
     
-    var config = parse("""
-    database:
-      host: localhost
-      port: 5432
-    """)
+    var config = parse("database:\\n  host: localhost\\n  port: 5432")
     
     var db = config.get("database")
     print(db.get("host").as_string())  # "localhost"
