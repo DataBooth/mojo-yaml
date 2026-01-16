@@ -210,11 +210,39 @@ Real-world YAML files in `fixtures/`:
 
 For detailed compatibility info, see [COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
+## Benchmarking
+
+Compare mojo-yaml performance against Python's pyyaml:
+
+```bash
+pixi run benchmark-mojo     # Run mojo-yaml benchmarks
+pixi run benchmark-python   # Run Python baseline
+pixi run benchmark-all      # Run both and compare
+```
+
+### Performance Results
+
+**Apple M1 Pro:**
+
+| Test Case | mojo-yaml | Python pyyaml | Speedup |
+|-----------|-----------|---------------|----------|
+| Simple sequence (5 items) | 8 μs | 111 μs | **14x** |
+| Simple mapping (5 pairs) | 9 μs | 185 μs | **21x** |
+| Sequence of mappings (9 keys) | 19 μs | 367 μs | **19x** |
+| Nested structure (2 levels) | 22 μs | 433 μs | **20x** |
+| Large document (30+ values) | 60 μs | 1.1 ms | **18x** |
+| Real-world config file | 133 μs | 1.2 ms | **9x** |
+
+**Summary:** mojo-yaml is **9-21x faster** than Python's pyyaml for typical YAML Lite parsing tasks! 🚀
+
+Detailed reports are saved to `benchmarks/reports/` after running benchmarks.
+
 ## Documentation
 
 - [CHANGELOG.md](CHANGELOG.md) - Version history and changes
 - [docs/planning/](docs/planning/) - Technical documentation and design docs
 - [examples/](examples/) - Usage examples
+- [benchmarks/](benchmarks/) - Performance benchmarks and reports
 
 ## Related Projects
 

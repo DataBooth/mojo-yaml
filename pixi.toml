@@ -35,6 +35,7 @@ example-all = { depends-on = ["example-quickstart", "example-basic", "example-ne
 # Benchmark tasks
 benchmark-mojo = "python benchmarks/run_mojo_benchmark.py"
 benchmark-python = "python benchmarks/compare_python.py"
+benchmark-all = { depends-on = ["benchmark-mojo", "benchmark-python"] }
 
 # Code quality tasks
 pre-commit = "pre-commit run --all-files"
@@ -44,3 +45,4 @@ pre-commit-install = "pre-commit install"
 mojo = "*"
 python = ">=3.11"  # Required for test runner and benchmarks
 pre-commit = ">=4.5.1,<5"
+pyyaml = "*"  # Required for benchmark comparisons
