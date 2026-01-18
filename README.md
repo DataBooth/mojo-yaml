@@ -2,7 +2,7 @@
 
 **YAML Lite parser for Mojo** - Native, zero-dependency YAML reader
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Mojo](https://img.shields.io/badge/Mojo-🔥-orange)](https://www.modular.com/mojo)
 [![Status](https://img.shields.io/badge/Status-v0.1.0%20Lite-brightgreen)](https://github.com/DataBooth/mojo-yaml)
 [![Tests](https://img.shields.io/badge/Tests-91%2F91%20passing-brightgreen)](https://github.com/DataBooth/mojo-yaml)
@@ -262,7 +262,7 @@ Contributions welcome! Please:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+Apache 2.0 License - see [LICENSE](LICENSE) file for details
 
 ---
 
