@@ -6,6 +6,7 @@
 [![Mojo](https://img.shields.io/badge/Mojo-🔥-orange)](https://www.modular.com/mojo)
 [![Status](https://img.shields.io/badge/Status-v0.1.0%20Lite-brightgreen)](https://github.com/DataBooth/mojo-yaml)
 [![Tests](https://img.shields.io/badge/Tests-91%2F91%20passing-brightgreen)](https://github.com/DataBooth/mojo-yaml)
+[![CodeQL](https://github.com/DataBooth/mojo-yaml/workflows/CodeQL/badge.svg)](https://github.com/DataBooth/mojo-yaml/actions/workflows/codeql.yml)
 
 Parse YAML configuration files in native Mojo with zero Python dependencies.
 
