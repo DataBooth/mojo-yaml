@@ -19,7 +19,7 @@ Architecture:
     - Parser: Builds nested YamlValue structures from tokens
     - YamlValue: Variant type supporting null, bool, int, float, string, sequence, mapping
 
-Status: v0.1.0 - Lexer and Parser complete, nested structures working
+Status: v0.1.2 - Lexer and Parser complete, nested structures working
 """
 
 from .lexer import Lexer
