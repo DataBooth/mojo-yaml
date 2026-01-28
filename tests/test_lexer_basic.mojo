@@ -55,11 +55,11 @@ def test_advance_newline():
     _ = lexer.advance()  # 'a'
     assert_equal(lexer.line, 1)
     assert_equal(lexer.column, 2)
-    
+
     _ = lexer.advance()  # '\n'
     assert_equal(lexer.line, 2)
     assert_equal(lexer.column, 1)
-    
+
     _ = lexer.advance()  # 'b'
     assert_equal(lexer.line, 2)
     assert_equal(lexer.column, 2)
@@ -69,10 +69,10 @@ def test_count_leading_spaces():
     """Test count_leading_spaces() counts indentation."""
     var lexer1 = Lexer("  text")
     assert_equal(lexer1.count_leading_spaces(), 2)
-    
+
     var lexer2 = Lexer("    text")
     assert_equal(lexer2.count_leading_spaces(), 4)
-    
+
     var lexer3 = Lexer("text")
     assert_equal(lexer3.count_leading_spaces(), 0)
 
@@ -82,7 +82,7 @@ def test_skip_whitespace():
     var lexer = Lexer("   \t  a")
     lexer.skip_whitespace()
     assert_equal(lexer.current(), "a")
-    
+
     var lexer2 = Lexer("  \na")
     lexer2.skip_whitespace()
     assert_equal(lexer2.current(), "\n")  # Should stop at newline

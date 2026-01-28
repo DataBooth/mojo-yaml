@@ -58,7 +58,7 @@ def test_sequence_with_values():
     seq.append(YamlValue("item1"))
     seq.append(YamlValue(42))
     var val = YamlValue(seq^)
-    
+
     assert_true(val.is_sequence())
     var retrieved = val.as_sequence()
     assert_equal(len(retrieved), 2)
@@ -78,7 +78,7 @@ def test_mapping_with_values():
     map["name"] = YamlValue("test")
     map["count"] = YamlValue(10)
     var val = YamlValue(map^)
-    
+
     assert_true(val.is_mapping())
     var name_val = val.get("name")
     assert_true(name_val.is_string())
@@ -90,7 +90,7 @@ def test_get_from_mapping():
     var map = Dict[String, YamlValue]()
     map["key1"] = YamlValue("value1")
     var val = YamlValue(map^)
-    
+
     var retrieved = val.get("key1")
     assert_equal(retrieved.as_string(), "value1")
 
@@ -101,7 +101,7 @@ def test_get_at_from_sequence():
     seq.append(YamlValue("first"))
     seq.append(YamlValue("second"))
     var val = YamlValue(seq^)
-    
+
     var first = val.get_at(0)
     var second = val.get_at(1)
     assert_equal(first.as_string(), "first")
@@ -154,14 +154,14 @@ def test_nested_structure():
     var inner_seq = List[YamlValue]()
     inner_seq.append(YamlValue(1))
     inner_seq.append(YamlValue(2))
-    
+
     var outer_map = Dict[String, YamlValue]()
     outer_map["numbers"] = YamlValue(inner_seq^)
     outer_map["name"] = YamlValue("test")
-    
+
     var root = YamlValue(outer_map^)
     assert_true(root.is_mapping())
-    
+
     var numbers = root.get("numbers")
     assert_true(numbers.is_sequence())
 

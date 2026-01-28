@@ -342,29 +342,29 @@ struct Lexer:
 
     fn scan_number(mut self) raises -> Token:
         """Scan a number (integer or float).
-        
+
         Returns:
             INTEGER or FLOAT token.
         """
         var start_pos = Position(self.line, self.column)
         var num_str = String("")
         var is_float = False
-        
+
         # Handle negative numbers
         if self.current() == "-":
             num_str += self.advance()
-        
+
         # Read digits before decimal point
         while self.pos < len(self.input) and self.is_digit(self.current()):
             num_str += self.advance()
-        
+
         # Check for decimal point
         if self.current() == "." and self.is_digit(self.peek()):
             is_float = True
             num_str += self.advance()  # consume '.'
             while self.pos < len(self.input) and self.is_digit(self.current()):
                 num_str += self.advance()
-        
+
         # Check for scientific notation (e.g., 1.5e10)
         if self.current() == "e" or self.current() == "E":
             is_float = True
@@ -373,7 +373,7 @@ struct Lexer:
                 num_str += self.advance()
             while self.pos < len(self.input) and self.is_digit(self.current()):
                 num_str += self.advance()
-        
+
         if is_float:
             return Token(TokenKind.FLOAT(), num_str, start_pos)
         else:
@@ -381,22 +381,22 @@ struct Lexer:
 
     fn scan_unquoted_string(mut self) raises -> Token:
         """Scan an unquoted string or keyword.
-        
+
         This handles unquoted values, keys, and keywords like true/false/null.
-        
+
         Returns:
             STRING, BOOLEAN, or NULL token depending on content.
         """
         var start_pos = Position(self.line, self.column)
         var text = String("")
-        
+
         # Read until we hit a special character
         while self.pos < len(self.input):
             var c = self.current()
             if c == ":" or c == "#" or c == "\n" or c == " " or c == "\t":
                 break
             text += self.advance()
-        
+
         # Check for special keywords
         var trimmed = String(text.strip())
         if trimmed == "true" or trimmed == "false" or trimmed == "yes" or trimmed == "no":
@@ -421,7 +421,7 @@ struct Lexer:
             # Handle indentation at line start
             if self.at_line_start:
                 var indent_level = self.count_leading_spaces()
-                
+
                 # Skip blank lines and comment-only lines for indentation tracking
                 var temp_pos = self.pos + indent_level
                 if temp_pos >= len(self.input) or String(self.input[temp_pos]) == "\n" or String(self.input[temp_pos]) == "#":
@@ -430,7 +430,7 @@ struct Lexer:
                 else:
                     # Real content - process indentation change
                     var current_indent = self.indent_stack[len(self.indent_stack) - 1]
-                    
+
                     if indent_level > current_indent:
                         # Increased indentation - emit INDENT
                         tokens.append(Token(TokenKind.INDENT(), "", Position(self.line, self.column)))
@@ -440,32 +440,32 @@ struct Lexer:
                         while len(self.indent_stack) > 1 and self.indent_stack[len(self.indent_stack) - 1] > indent_level:
                             tokens.append(Token(TokenKind.DEDENT(), "", Position(self.line, self.column)))
                             _ = self.indent_stack.pop()
-                        
+
                         # Check for indentation mismatch
                         if len(self.indent_stack) > 0 and self.indent_stack[len(self.indent_stack) - 1] != indent_level:
                             raise Error("Indentation mismatch at line " + String(self.line))
-                    
+
                     self.at_line_start = False
-            
+
             var c = self.current()
-            
+
             # Skip whitespace (but track for indentation later)
             if c == " " or c == "\t":
                 self.skip_whitespace()
                 continue
-            
+
             # Newline
             if c == "\n":
                 tokens.append(Token(TokenKind.NEWLINE(), "\n", Position(self.line, self.column)))
                 _ = self.advance()
                 self.at_line_start = True
                 continue
-            
+
             # Comment
             if c == "#":
                 tokens.append(self.read_comment())
                 continue
-            
+
             # Colon (mapping separator)
             if c == ":":
                 tokens.append(Token(TokenKind.COLON(), ":", Position(self.line, self.column)))
@@ -474,45 +474,45 @@ struct Lexer:
                 if self.current() == " ":
                     self.skip_whitespace()
                 continue
-            
+
             # Dash (sequence indicator) - must be followed by space
             if c == "-" and (self.peek() == " " or self.peek() == "\n"):
                 tokens.append(Token(TokenKind.DASH(), "-", Position(self.line, self.column)))
                 _ = self.advance()
                 self.skip_whitespace()
                 continue
-            
+
             # Quoted strings
             if c == '"' or c == "'":
                 tokens.append(self.read_quoted_string(c))
                 continue
-            
+
             # Numbers (including negative)
             if self.is_digit(c) or (c == "-" and self.is_digit(self.peek())):
                 tokens.append(self.scan_number())
                 continue
-            
+
             # Tilde (null shorthand)
             if c == "~":
                 tokens.append(Token(TokenKind.NULL(), "~", Position(self.line, self.column)))
                 _ = self.advance()
                 continue
-            
+
             # Unquoted strings, keys, or keywords (true/false/null/etc.)
             # Also handle '-' that's not a list indicator or negative number
             if self.is_alpha(c) or c == "_" or c == "/" or c == "." or c == "-":
                 tokens.append(self.scan_unquoted_string())
                 continue
-            
+
             # Unknown character - raise error
-            raise Error("Unexpected character '" + c + "' at line " + String(self.line) + 
+            raise Error("Unexpected character '" + c + "' at line " + String(self.line) +
                        ", column " + String(self.column))
-        
+
         # Emit remaining DEDENT tokens at EOF
         while len(self.indent_stack) > 1:
             tokens.append(Token(TokenKind.DEDENT(), "", Position(self.line, self.column)))
             _ = self.indent_stack.pop()
-        
+
         # Add EOF token
         tokens.append(Token(TokenKind.EOF(), "", Position(self.line, self.column)))
 

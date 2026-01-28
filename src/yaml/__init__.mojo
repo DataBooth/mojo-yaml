@@ -5,10 +5,10 @@ Lite YAML parser supporting block-style mappings and sequences.
 Example:
     ```mojo
     from yaml import parse
-    
+
     var yaml_str = "database:\\n  host: localhost\\n  port: 5432"
     var config = parse(yaml_str)
-    
+
     var db = config.get("database")
     print(db.get("host").as_string())  # "localhost"
     print(db.get("port").as_int())      # 5432
@@ -29,16 +29,16 @@ from .value import YamlValue
 
 fn parse(content: String) raises -> YamlValue:
     """Parse YAML string into YamlValue.
-    
+
     Args:
         content: YAML formatted string.
-    
+
     Returns:
         Parsed YamlValue (typically a mapping or sequence).
-    
+
     Raises:
         Error: If YAML syntax is invalid.
-    
+
     Example:
         ```mojo
         var yaml_str = "name: Alice\\nage: 30"

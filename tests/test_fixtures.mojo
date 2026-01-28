@@ -18,7 +18,7 @@ def test_can_read_pre_commit_fixture():
       - id: check-toml
       - id: check-yaml
 """)
-    
+
     var lexer = Lexer(content)
     # Basic validation - lexer can be created
     assert_equal(lexer.pos, 0)
@@ -37,7 +37,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.pos, 0)
     assert_equal(lexer.line, 1)
@@ -53,7 +53,7 @@ services:
     ports:
       - "80:80"
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.pos, 0)
 
@@ -68,12 +68,12 @@ server:
   host: localhost
   port: 8080
 """)
-    
+
     var lexer = Lexer(content)
     # Verify we can navigate through the content
     var first_char = lexer.current()
     assert_equal(first_char, "n")
-    
+
     _ = lexer.advance()
     assert_equal(lexer.current(), "a")
 
@@ -88,11 +88,11 @@ def test_multiline_yaml():
       - name: posts
         path: /api/posts
 """)
-    
+
     var lexer = Lexer(content)
     # Basic lexer operations work
     assert_equal(lexer.line, 1)
-    
+
     # Test indentation counting
     # First line has no indentation
     assert_equal(lexer.count_leading_spaces(), 0)
@@ -105,10 +105,10 @@ def test_yaml_with_lists():
   - nested structures
   - basic types
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.pos, 0)
-    
+
     # Advance to first line
     var c = lexer.current()
     assert_equal(c, "f")
@@ -119,7 +119,7 @@ def test_yaml_with_quoted_strings():
     var content = String("""message: "quoted string"
 path: /unquoted/path
 """)
-    
+
     var lexer = Lexer(content)
     # Test quoted string detection
     var first = lexer.current()
@@ -132,7 +132,7 @@ def test_yaml_with_numbers():
 ratio: 3.14
 negative: -17
 """)
-    
+
     var lexer = Lexer(content)
     assert_true(lexer.is_digit("4"))
     assert_true(lexer.is_digit("2"))
@@ -146,7 +146,7 @@ disabled: false
 yes_value: yes
 no_value: no
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.line, 1)
 
@@ -156,7 +156,7 @@ def test_yaml_with_null():
     var content = String("""empty: null
 tilde: ~
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.pos, 0)
 
@@ -167,7 +167,7 @@ def test_yaml_with_comments():
 key: value  # Inline comment
 # Another comment
 """)
-    
+
     var lexer = Lexer(content)
     # Skip to first non-comment line would be tested when lexer is complete
     assert_equal(lexer.current(), "#")
@@ -181,7 +181,7 @@ def test_complex_nested_structure():
       level3:
         deep_value: found
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.line, 1)
     # Test deep nesting parsing will be added when parser is complete
@@ -195,7 +195,7 @@ def test_sequence_of_mappings():
   - repo: https://example.com/repo2
     rev: v2.0.0
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.pos, 0)
 
@@ -209,7 +209,7 @@ key2: value2
 
 key3: value3
 """)
-    
+
     var lexer = Lexer(content)
     assert_equal(lexer.line, 1)
 
@@ -220,7 +220,7 @@ def test_mixed_indentation_detection():
   two_spaces: value
     four_spaces: value
 """)
-    
+
     var lexer = Lexer(content)
     # First line - no indentation
     assert_equal(lexer.count_leading_spaces(), 0)

@@ -12,7 +12,7 @@ def test_parse_empty():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_null())
 
 
@@ -22,7 +22,7 @@ def test_parse_simple_string():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_string())
     assert_equal(result.as_string(), "hello")
 
@@ -33,7 +33,7 @@ def test_parse_integer():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_int())
     assert_equal(result.as_int(), 42)
 
@@ -44,7 +44,7 @@ def test_parse_float():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_float())
     # Note: Float comparison with tolerance
     var val = result.as_float()
@@ -57,7 +57,7 @@ def test_parse_boolean_true():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_bool())
     assert_equal(result.as_bool(), True)
 
@@ -68,7 +68,7 @@ def test_parse_boolean_false():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_bool())
     assert_equal(result.as_bool(), False)
 
@@ -79,7 +79,7 @@ def test_parse_null():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_null())
 
 
@@ -89,7 +89,7 @@ def test_parse_simple_mapping():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_mapping())
     var mapping = result.as_mapping()
     assert_true("name" in mapping)
@@ -102,7 +102,7 @@ def test_parse_multiple_keys():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_mapping())
     var mapping = result.as_mapping()
     assert_equal(len(mapping), 2)
@@ -116,7 +116,7 @@ def test_parse_simple_sequence():
     var tokens = lexer.tokenize()
     var parser = Parser(tokens^)
     var result = parser.parse()
-    
+
     assert_true(result.is_sequence())
     var seq = result.as_sequence()
     assert_equal(len(seq), 2)

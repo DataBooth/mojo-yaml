@@ -20,7 +20,7 @@ database:
 # Simple sequences
 features:
   - "block-style parsing"
-  - "nested structures"  
+  - "nested structures"
   - "basic types"
   - comments
 

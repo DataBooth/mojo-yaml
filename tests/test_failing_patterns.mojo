@@ -20,7 +20,7 @@ fn main() raises:
                     print("    Keys:", len(item.mapping_value))
     except e:
         print("❌ Failed:", e)
-    
+
     print("\\nTest 2: Complex nested (from test)")
     var yaml2 = """config:
   servers:

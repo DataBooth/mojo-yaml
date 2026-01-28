@@ -37,7 +37,7 @@ struct YamlValue(Copyable, Movable):
 
     YAML supports: null, booleans, integers, floats, strings,
     sequences (lists), and mappings (nested dicts).
-    
+
     Usage:
         var str_val = YamlValue("hello")
         var int_val = YamlValue(42)
@@ -128,32 +128,32 @@ struct YamlValue(Copyable, Movable):
     fn null() -> YamlValue:
         """Create a null value."""
         return YamlValue()
-    
+
     @staticmethod
     fn bool(value: Bool) -> YamlValue:
         """Create a boolean value."""
         return YamlValue(value)
-    
+
     @staticmethod
     fn integer(value: Int) -> YamlValue:
         """Create an integer value."""
         return YamlValue(value)
-    
+
     @staticmethod
     fn float(value: Float64) -> YamlValue:
         """Create a float value."""
         return YamlValue(value)
-    
+
     @staticmethod
     fn string(value: String) -> YamlValue:
         """Create a string value."""
         return YamlValue(value)
-    
+
     @staticmethod
     fn sequence(var value: List[YamlValue]) -> YamlValue:
         """Create a sequence value."""
         return YamlValue(value^)
-    
+
     @staticmethod
     fn mapping(var value: Dict[String, YamlValue]) -> YamlValue:
         """Create a mapping value."""
@@ -191,7 +191,7 @@ struct YamlValue(Copyable, Movable):
     # Accessor methods with type checking
     fn as_string(self) raises -> String:
         """Get string value.
-        
+
         Raises:
             Error: If value is not a string.
         """
@@ -201,7 +201,7 @@ struct YamlValue(Copyable, Movable):
 
     fn as_int(self) raises -> Int:
         """Get integer value.
-        
+
         Raises:
             Error: If value is not an integer.
         """
@@ -211,7 +211,7 @@ struct YamlValue(Copyable, Movable):
 
     fn as_float(self) raises -> Float64:
         """Get float value.
-        
+
         Raises:
             Error: If value is not a float.
         """
@@ -221,7 +221,7 @@ struct YamlValue(Copyable, Movable):
 
     fn as_bool(self) raises -> Bool:
         """Get boolean value.
-        
+
         Raises:
             Error: If value is not a boolean.
         """
@@ -231,7 +231,7 @@ struct YamlValue(Copyable, Movable):
 
     fn as_sequence(self) raises -> List[YamlValue]:
         """Get sequence (list) value (returns a copy).
-        
+
         Raises:
             Error: If value is not a sequence.
         """
@@ -245,7 +245,7 @@ struct YamlValue(Copyable, Movable):
 
     fn as_mapping(self) raises -> Dict[String, YamlValue]:
         """Get mapping (dict) value (returns a copy).
-        
+
         Raises:
             Error: If value is not a mapping.
         """
@@ -259,13 +259,13 @@ struct YamlValue(Copyable, Movable):
 
     fn get(self, key: String) raises -> YamlValue:
         """Get value by key from mapping (returns a copy).
-        
+
         Args:
             key: The key to look up.
-            
+
         Returns:
             The value associated with the key.
-            
+
         Raises:
             Error: If value is not a mapping or key doesn't exist.
         """
@@ -275,13 +275,13 @@ struct YamlValue(Copyable, Movable):
 
     fn get_at(self, index: Int) raises -> YamlValue:
         """Get value by index from sequence (returns a copy).
-        
+
         Args:
             index: The index to look up.
-            
+
         Returns:
             The value at the index.
-            
+
         Raises:
             Error: If value is not a sequence or index out of bounds.
         """

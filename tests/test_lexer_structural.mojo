@@ -8,7 +8,7 @@ def test_simple_sequence():
     """Test tokenisation of simple list."""
     var lexer = Lexer("- apple\n- banana")
     var tokens = lexer.tokenize()
-    
+
     assert_equal(len(tokens), 6)  # dash, string, newline, dash, string, EOF
     assert_true(tokens[0].kind == TokenKind.DASH())
     assert_true(tokens[1].kind == TokenKind.STRING())
@@ -23,7 +23,7 @@ def test_simple_mapping():
     """Test tokenisation of simple key-value."""
     var lexer = Lexer("name: Alice\nage: 30")
     var tokens = lexer.tokenize()
-    
+
     assert_equal(len(tokens), 8)  # name : Alice \n age : 30 EOF
     assert_true(tokens[0].kind == TokenKind.STRING())
     assert_equal(tokens[0].value, "name")
@@ -42,7 +42,7 @@ def test_empty_value():
     """Test key with empty value."""
     var lexer = Lexer("key:\nother: value")
     var tokens = lexer.tokenize()
-    
+
     assert_equal(len(tokens), 7)  # key : \n other : value EOF
     assert_true(tokens[0].kind == TokenKind.STRING())
     assert_equal(tokens[0].value, "key")
@@ -59,7 +59,7 @@ def test_sequence_with_mapping():
     """Test list items containing key-value pairs."""
     var lexer = Lexer("- name: Alice\n  age: 30")
     var tokens = lexer.tokenize()
-    
+
     # - name : Alice \n INDENT age : 30 DEDENT EOF
     assert_equal(len(tokens), 11)
     assert_true(tokens[0].kind == TokenKind.DASH())
@@ -81,7 +81,7 @@ def test_nested_mapping():
     """Test mapping containing nested mapping."""
     var lexer = Lexer("parent:\n  child: value")
     var tokens = lexer.tokenize()
-    
+
     # parent : \n INDENT child : value DEDENT EOF
     assert_equal(len(tokens), 9)
     assert_true(tokens[0].kind == TokenKind.STRING())
@@ -104,7 +104,7 @@ def test_sequence_spacing_variations():
     assert_equal(len(tokens1), 2)  # string "-one", EOF
     assert_true(tokens1[0].kind == TokenKind.STRING())
     assert_equal(tokens1[0].value, "-one")
-    
+
     var lexer2 = Lexer("- two")  # Space after - proper list syntax
     var tokens2 = lexer2.tokenize()
     assert_equal(len(tokens2), 3)  # dash, string, EOF
@@ -123,7 +123,7 @@ def test_colon_spacing_variations():
     assert_true(tokens1[1].kind == TokenKind.COLON())
     assert_true(tokens1[2].kind == TokenKind.STRING())
     assert_equal(tokens1[2].value, "value")
-    
+
     var lexer2 = Lexer("key: value")  # Space after
     var tokens2 = lexer2.tokenize()
     assert_equal(len(tokens2), 4)
