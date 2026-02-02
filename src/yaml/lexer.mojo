@@ -40,6 +40,14 @@ raw characters, making YAML syntax rules easier to implement.
 from collections import List
 
 
+fn to_chars(text: String) -> List[String]:
+    """Convert a String into a list of single-codepoint Strings."""
+    var chars = List[String]()
+    for slice in text.codepoint_slices():
+        chars.append(String(slice))
+    return chars^
+
+
 @register_passable("trivial")
 struct Position:
     """Position in the source file (line and column).
@@ -179,6 +187,7 @@ struct Lexer:
     """
 
     var input: String
+    var chars: List[String]
     var pos: Int      # Current position in input
     var line: Int     # Current line number (1-indexed)
     var column: Int   # Current column number (1-indexed)
@@ -192,6 +201,7 @@ struct Lexer:
             input: YAML content to tokenise.
         """
         self.input = input
+        self.chars = to_chars(input)
         self.pos = 0
         self.line = 1
         self.column = 1
@@ -205,9 +215,9 @@ struct Lexer:
         Returns:
             Current character or empty string if at EOF.
         """
-        if self.pos >= len(self.input):
+        if self.pos >= len(self.chars):
             return ""
-        return String(self.input[self.pos])
+        return self.chars[self.pos]
 
     fn peek(self, offset: Int = 1) -> String:
         """Look ahead at character without consuming it.
@@ -219,9 +229,9 @@ struct Lexer:
             Character at pos + offset or empty string if out of bounds.
         """
         var peek_pos = self.pos + offset
-        if peek_pos >= len(self.input):
+        if peek_pos >= len(self.chars):
             return ""
-        return String(self.input[peek_pos])
+        return self.chars[peek_pos]
 
     fn advance(mut self) -> String:
         """Consume and return current character.
@@ -231,10 +241,10 @@ struct Lexer:
         Returns:
             Current character or empty string if at EOF.
         """
-        if self.pos >= len(self.input):
+        if self.pos >= len(self.chars):
             return ""
 
-        var c = String(self.input[self.pos])
+        var c = self.chars[self.pos]
         self.pos += 1
 
         if c == "\n":
@@ -257,8 +267,8 @@ struct Lexer:
         var count = 0
         var temp_pos = self.pos
 
-        while temp_pos < len(self.input):
-            var c = String(self.input[temp_pos])
+        while temp_pos < len(self.chars):
+            var c = self.chars[temp_pos]
             if c == " " or c == "\t":
                 count += 1
                 temp_pos += 1
@@ -272,7 +282,7 @@ struct Lexer:
 
         Newlines are significant in YAML for structure.
         """
-        while self.pos < len(self.input):
+        while self.pos < len(self.chars):
             var c = self.current()
             if c == " " or c == "\t":
                 _ = self.advance()
@@ -292,7 +302,7 @@ struct Lexer:
         _ = self.advance()  # Skip #
 
         var comment = String("")
-        while self.pos < len(self.input):
+        while self.pos < len(self.chars):
             var c = self.current()
             if c == "\n":
                 break
@@ -355,14 +365,14 @@ struct Lexer:
             num_str += self.advance()
 
         # Read digits before decimal point
-        while self.pos < len(self.input) and self.is_digit(self.current()):
+        while self.pos < len(self.chars) and self.is_digit(self.current()):
             num_str += self.advance()
 
         # Check for decimal point
         if self.current() == "." and self.is_digit(self.peek()):
             is_float = True
             num_str += self.advance()  # consume '.'
-            while self.pos < len(self.input) and self.is_digit(self.current()):
+            while self.pos < len(self.chars) and self.is_digit(self.current()):
                 num_str += self.advance()
 
         # Check for scientific notation (e.g., 1.5e10)
@@ -371,7 +381,7 @@ struct Lexer:
             num_str += self.advance()
             if self.current() == "+" or self.current() == "-":
                 num_str += self.advance()
-            while self.pos < len(self.input) and self.is_digit(self.current()):
+            while self.pos < len(self.chars) and self.is_digit(self.current()):
                 num_str += self.advance()
 
         if is_float:
@@ -391,7 +401,7 @@ struct Lexer:
         var text = String("")
 
         # Read until we hit a special character
-        while self.pos < len(self.input):
+        while self.pos < len(self.chars):
             var c = self.current()
             if c == ":" or c == "#" or c == "\n" or c == " " or c == "\t":
                 break
@@ -417,14 +427,14 @@ struct Lexer:
         """
         var tokens = List[Token]()
 
-        while self.pos < len(self.input):
+        while self.pos < len(self.chars):
             # Handle indentation at line start
             if self.at_line_start:
                 var indent_level = self.count_leading_spaces()
 
                 # Skip blank lines and comment-only lines for indentation tracking
                 var temp_pos = self.pos + indent_level
-                if temp_pos >= len(self.input) or String(self.input[temp_pos]) == "\n" or String(self.input[temp_pos]) == "#":
+                if temp_pos >= len(self.chars) or self.chars[temp_pos] == "\n" or self.chars[temp_pos] == "#":
                     # Blank or comment line - don't change indentation
                     self.at_line_start = False
                 else:

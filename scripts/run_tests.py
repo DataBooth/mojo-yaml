@@ -63,7 +63,7 @@ def main():
     import os
     os.chdir(project_root)
 
-    print("=== mojo-toml Test Suite ===")
+    print("=== mojo-yaml Test Suite ===")
     print()
 
     # Discover tests

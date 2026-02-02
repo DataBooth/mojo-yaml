@@ -47,7 +47,7 @@ pre-submit = "python scripts/pre_submit_checklist.py"
 pre-submit-modular-community = "python scripts/pre_submit_checklist.py"
 
 [dependencies]
-max = ">=25.7.0,<26"
+max = ">=26.1.0,<27"
 python = ">=3.11,<4"  # Required for test runner and benchmarks
 pre-commit = ">=4.5.1,<5"
 pyyaml = "*"  # Required for benchmark comparisons

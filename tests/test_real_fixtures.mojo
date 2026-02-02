@@ -1,74 +1,78 @@
-"""
-Test real-world YAML fixtures to understand what works and what doesn't.
-This is a diagnostic tool to evaluate v0.1.0 Lite capabilities.
+"""Real-world YAML fixtures.
+
+These tests encode the current expectations for the v0.1.0 "Lite" subset:
+- yaml_lite_example.yaml: MUST parse successfully (designed for this parser).
+- pre_commit.yaml: MAY fail today (flow-style list); we assert a failure so any
+  unexpected success will be visible.
+- github_workflow.yaml: MUST fail (heavily uses flow-style and expressions).
+- docker_compose.yaml: MAY fail (single quotes, mixed styles); again we assert
+  that it currently fails so changes are deliberate.
 """
 
 from pathlib import Path
+from testing import assert_true, TestSuite
 from yaml import parse
 
 
-fn test_fixture(fixture_name: String, path: String) raises:
-    """Test a single fixture and report results."""
-    print("\n" + "="*60)
-    print("Testing: " + fixture_name)
-    print("="*60)
-
-    var p = Path(path)
+fn test_yaml_lite_example_parses() raises:
+    """YAML_lite_example.yaml should parse and produce a mapping."""
+    var p = Path("fixtures/yaml_lite_example.yaml")
     var content = p.read_text()
 
-    print("Content preview (first 200 chars):")
-    print(content[:200] + "..." if len(content) > 200 else content)
-    print()
+    var result = parse(content)
+    assert_true(result.is_mapping())
+    # Sanity check a couple of keys so structure stays stable
+    assert_true("name" in result.mapping_value)
+    assert_true("server" in result.mapping_value)
 
+
+fn test_pre_commit_expected_failure() raises:
+    """Pre-commit.yaml currently fails due to flow-style list; assert failure."""
+    var p = Path("fixtures/pre_commit.yaml")
+    var content = p.read_text()
+
+    var failed = False
     try:
-        var result = parse(content)
-        print("✅ PARSING SUCCEEDED")
-
-        # Show structure type
-        if result.is_mapping():
-            print("Type: Mapping (dict) with", len(result.mapping_value), "keys")
-        elif result.is_sequence():
-            print("Type: Sequence (list) with", len(result.sequence_value), "items")
-        else:
-            print("Type: Scalar value")
-
-        return
+        var _ = parse(content)
     except e:
-        print("❌ PARSING FAILED")
-        print("\nError:", e)
-        return
+        failed = True
+        print("pre_commit.yaml failed as expected:", e)
+
+    if not failed:
+        raise Error("Expected parse failure for pre_commit.yaml (flow-style list)")
+
+
+fn test_github_workflow_expected_failure() raises:
+    """GitHub_workflow.yaml is outside the Lite subset; MUST fail for now."""
+    var p = Path("fixtures/github_workflow.yaml")
+    var content = p.read_text()
+
+    var failed = False
+    try:
+        var _ = parse(content)
+    except e:
+        failed = True
+        print("github_workflow.yaml failed as expected:", e)
+
+    if not failed:
+        raise Error("Expected parse failure for github_workflow.yaml (flow-style + expressions)")
+
+
+fn test_docker_compose_expected_failure() raises:
+    """Docker_compose.yaml currently fails (quotes, mixed styles); assert failure."""
+    var p = Path("fixtures/docker_compose.yaml")
+    var content = p.read_text()
+
+    var failed = False
+    try:
+        var _ = parse(content)
+    except e:
+        failed = True
+        print("docker_compose.yaml failed as expected:", e)
+
+    if not failed:
+        raise Error("Expected parse failure for docker_compose.yaml in v0.1.0 Lite")
 
 
 fn main() raises:
-    print("="*60)
-    print("REAL-WORLD YAML FIXTURE TESTING")
-    print("="*60)
-
-    # Test 1: YAML Lite Example (should work - designed for this parser)
-    test_fixture(
-        "yaml_lite_example.yaml",
-        "fixtures/yaml_lite_example.yaml"
-    )
-
-    # Test 2: Pre-commit config (block-style, should mostly work)
-    test_fixture(
-        "pre_commit.yaml",
-        "fixtures/pre_commit.yaml"
-    )
-
-    # Test 3: GitHub workflow (has flow-style arrays, will fail)
-    test_fixture(
-        "github_workflow.yaml",
-        "fixtures/github_workflow.yaml"
-    )
-
-    # Test 4: Docker Compose (single quotes, empty values)
-    test_fixture(
-        "docker_compose.yaml",
-        "fixtures/docker_compose.yaml"
-    )
-
-    print("\n" + "="*60)
-    print("SUMMARY")
-    print("="*60)
-    print("Check results above to understand v0.1.0 Lite limitations")
+    TestSuite.discover_tests[__functions_in_module()]().run()

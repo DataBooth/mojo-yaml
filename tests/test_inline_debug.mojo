@@ -1,6 +1,7 @@
+from testing import TestSuite
 from yaml.lexer import Lexer, TokenKind
 
-fn main() raises:
+fn test_inline_list_mapping_debug() raises:
     print("Debugging inline list-mapping pattern")
     print("="*60)
 
@@ -17,7 +18,7 @@ fn main() raises:
     print("Token stream:")
     for i in range(len(tokens)):
         var tok = tokens[i].copy()
-        var kind_str = String("")
+        var _ = String("")
 
         if tok.kind == TokenKind.DASH():
             kind_str = "DASH"
@@ -39,3 +40,7 @@ fn main() raises:
             kind_str = "OTHER"
 
         print(i, ":", kind_str, "  value:", repr(tok.value), "  pos:", tok.pos.line, ":", tok.pos.column)
+
+
+fn main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

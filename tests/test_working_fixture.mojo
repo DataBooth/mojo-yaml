@@ -1,7 +1,9 @@
 from pathlib import Path
+from testing import assert_equal, assert_true, TestSuite
 from yaml import parse
 
-fn main() raises:
+
+fn test_working_fixture() raises:
     print("Testing yaml_lite_working.yaml")
     print("="*60)
 
@@ -10,33 +12,37 @@ fn main() raises:
 
     print("File size:", len(content), "bytes")
 
-    try:
-        var result = parse(content)
-        print("✅ PARSING SUCCEEDED!")
-        print()
+    var result = parse(content)
+    print("✅ PARSING SUCCEEDED!")
+    print()
 
-        # Test various fields
-        print("Testing field access:")
-        print("  name:", result.get("name").as_string())
-        print("  version:", result.get("version").as_string())
-        print("  description:", result.get("description").as_string())
+    # Test various fields
+    print("Testing field access:")
+    assert_equal(result.get("name").as_string(), "mojo-yaml")
+    assert_equal(result.get("version").as_string(), "0.1.0")
 
-        var server = result.get("server")
-        print("  server.host:", server.get("host").as_string())
-        print("  server.port:", server.get("port").as_int())
-        print("  server.debug:", server.get("debug").as_bool())
+    var desc = result.get("description").as_string()
+    assert_true(len(desc) > 0)
 
-        var features = result.get("features")
-        print("  features count:", len(features.sequence_value))
-        print("  features[0]:", features.get_at(0).as_string())
+    var server = result.get("server")
+    assert_equal(server.get("host").as_string(), "localhost")
+    assert_equal(server.get("port").as_int(), 8080)
+    assert_true(server.get("debug").as_bool())
 
-        var config = result.get("config")
-        var api = config.get("api")
-        print("  config.api.url:", api.get("url").as_string())
-        print("  config.api.timeout:", api.get("timeout").as_int())
+    var features = result.get("features")
+    var seq = features.sequence_value.copy()
+    assert_true(len(seq) >= 1)
+    # First feature in the working fixture
+    assert_equal(features.get_at(0).as_string(), "block-style parsing")
 
-        print()
-        print("✅ All field access successful!")
+    var config = result.get("config")
+    var api = config.get("api")
+    assert_equal(api.get("url").as_string(), "/api/v1")
+    assert_equal(api.get("timeout").as_int(), 30)
 
-    except e:
-        print("❌ FAILED:", e)
+    print()
+    print("✅ All field access successful!")
+
+
+fn main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()
