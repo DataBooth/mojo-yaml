@@ -26,11 +26,7 @@ build-package = "mkdir -p dist && mojo package src/yaml -o dist/yaml.mojopkg"
 clean = "rm -rf dist __pycache__ .pytest_cache yaml.mojopkg"
 
 # Example tasks
-example-quickstart = "mojo -I src examples/quickstart.mojo"
-example-basic = "mojo -I src examples/basic_usage.mojo"
-example-nested = "mojo -I src examples/nested_data.mojo"
-example-file = "mojo -I src examples/read_file.mojo"
-example-all = { depends-on = ["example-quickstart", "example-basic", "example-nested", "example-file"] }
+examples-all = "python scripts/run_examples.py"
 
 # Benchmark tasks
 benchmark-mojo = "python benchmarks/run_mojo_benchmark.py"
