@@ -1,8 +1,8 @@
-[workspace]
+[project]
 authors = ["Michael Booth <michael@databooth.com.au>"]
-channels = ["conda-forge", "https://conda.modular.com/max-nightly"]
+channels = ["conda-forge", "https://conda.modular.com/max"]
 name = "mojo-yaml"
-platforms = ["osx-arm64", "linux-64"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 version = "0.0.1-placeholder"  # Not yet implemented
 
 [activation]
@@ -41,8 +41,14 @@ benchmark-all = { depends-on = ["benchmark-mojo", "benchmark-python"] }
 pre-commit = "pre-commit run --all-files"
 pre-commit-install = "pre-commit install"
 
+# Release / validation tasks
+validate-recipe = "./scripts/validate-recipe.sh recipe.yaml"
+pre-submit = "python scripts/pre_submit_checklist.py"
+pre-submit-modular-community = "python scripts/pre_submit_checklist.py"
+
 [dependencies]
-mojo = "*"
-python = ">=3.11"  # Required for test runner and benchmarks
+max = ">=25.7.0,<26"
+python = ">=3.11,<4"  # Required for test runner and benchmarks
 pre-commit = ">=4.5.1,<5"
 pyyaml = "*"  # Required for benchmark comparisons
+rattler-build = ">=0.55.1,<0.56"
