@@ -17,7 +17,7 @@ Uses a discriminated union pattern:
 - Provide type-safe accessors that raise on wrong type access
 """
 
-from collections import Dict, List
+from std.collections import Dict, List
 
 
 # Type constants for YamlValue discrimination

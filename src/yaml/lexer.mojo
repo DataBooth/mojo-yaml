@@ -37,7 +37,7 @@ raw characters, making YAML syntax rules easier to implement.
 - Scalars: Quoted strings, unquoted strings, numbers, booleans, null
 """
 
-from collections import List
+from std.collections import List
 
 
 fn to_chars(text: String) -> List[String]:
@@ -48,8 +48,7 @@ fn to_chars(text: String) -> List[String]:
     return chars^
 
 
-@register_passable("trivial")
-struct Position:
+struct Position(Copyable, Movable):
     """Position in the source file (line and column).
 
     Used for error messages to show users exactly where parsing failed.
@@ -62,9 +61,11 @@ struct Position:
         self.line = line
         self.column = column
 
+    fn copy(self) -> Self:
+        return Position(self.line, self.column)
 
-@register_passable("trivial")
-struct TokenKind:
+
+struct TokenKind(Copyable, Movable):
     """Token types for YAML lexer.
 
     YAML uses indentation for structure, unlike INI/TOML which use brackets.
@@ -73,6 +74,9 @@ struct TokenKind:
 
     fn __init__(out self, value: Int):
         self._value = value
+
+    fn copy(self) -> Self:
+        return TokenKind(self._value)
 
     # Special tokens
     @staticmethod
@@ -160,13 +164,13 @@ struct Token(Copyable, Movable):
     var pos: Position  # Where it appears in the file
 
     fn __init__(out self, kind: TokenKind, value: String, pos: Position):
-        self.kind = kind
+        self.kind = kind.copy()
         self.value = value
-        self.pos = pos
+        self.pos = pos.copy()
 
     fn copy(self) -> Self:
         """Create a copy of this token."""
-        return Token(self.kind, self.value, self.pos)
+        return Token(self.kind.copy(), self.value, self.pos.copy())
 
 
 struct Lexer:

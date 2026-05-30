@@ -32,7 +32,7 @@ allowing it to determine when to stop collecting items for a mapping or sequence
 - Scalars: Convert tokens to appropriate YamlValue types
 """
 
-from collections import List, Dict
+from std.collections import Dict, List
 from .lexer import Token, TokenKind, Position
 from .value import YamlValue
 

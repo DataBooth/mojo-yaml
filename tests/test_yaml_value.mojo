@@ -2,7 +2,7 @@
 
 from testing import assert_equal, assert_true, assert_false, TestSuite
 from yaml.value import YamlValue, YamlValueType
-from collections import List, Dict
+from std.collections import Dict, List
 
 
 def test_null_value():
