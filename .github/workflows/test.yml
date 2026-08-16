@@ -29,7 +29,7 @@ jobs:
       run: pixi run test-all
 
     - name: Run examples
-      run: pixi run example-all
+      run: pixi run examples-all
 
     - name: Test summary
       if: always()
