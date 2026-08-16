@@ -1,6 +1,6 @@
 from yaml import parse
 
-fn main() raises:
+def main() raises:
     print("Test 1: Sequence of mappings (inline)")
     var yaml1 = """- name: Alice
   age: 30
@@ -12,12 +12,13 @@ fn main() raises:
         print("✅ Success!")
         print("Result is sequence:", result.is_sequence())
         if result.is_sequence():
-            print("Length:", len(result.sequence_value))
-            for i in range(len(result.sequence_value)):
-                var item = result.sequence_value[i].copy()
+            var seq = result.as_sequence()
+            print("Length:", len(seq))
+            for i in range(len(seq)):
+                var item = seq[i].copy()
                 print("  Item", i, "is mapping:", item.is_mapping())
                 if item.is_mapping():
-                    print("    Keys:", len(item.mapping_value))
+                    print("    Keys:", len(item.as_mapping()))
     except e:
         print("❌ Failed:", e)
 

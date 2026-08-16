@@ -1,7 +1,7 @@
-from testing import TestSuite
+from std.testing import TestSuite
 from yaml import parse
 
-fn test_spaces_diagnostics() raises:
+def test_spaces_diagnostics() raises:
     print("Test 1: Simple unquoted string")
     var r1 = parse("name: value")
     if r1.get("name").as_string() != "value":
@@ -30,6 +30,6 @@ fn test_spaces_diagnostics() raises:
     print("Success:", r3.get("description").as_string())
 
 
-fn main() raises:
+def main() raises:
     # Wrap diagnostics in TestSuite so they integrate with the test runner.
     TestSuite.discover_tests[__functions_in_module()]().run()

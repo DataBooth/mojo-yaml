@@ -32,7 +32,7 @@ allowing it to determine when to stop collecting items for a mapping or sequence
 - Scalars: Convert tokens to appropriate YamlValue types
 """
 
-from collections import List, Dict
+from std.collections import Dict, List
 from .lexer import Token, TokenKind, Position
 from .value import YamlValue
 
@@ -56,7 +56,7 @@ struct Parser:
     var tokens: List[Token]
     var pos: Int  # Current position in token stream
 
-    fn __init__(out self, var tokens: List[Token]):
+    def __init__(out self, var tokens: List[Token]):
         """Initialise parser with token stream.
 
         Args:
@@ -65,7 +65,7 @@ struct Parser:
         self.tokens = tokens^
         self.pos = 0
 
-    fn current(self) -> Token:
+    def current(self) -> Token:
         """Get current token without advancing.
 
         Returns:
@@ -75,7 +75,7 @@ struct Parser:
             return Token(TokenKind.EOF(), "", Position(0, 0))
         return self.tokens[self.pos].copy()
 
-    fn peek(self, offset: Int = 1) -> Token:
+    def peek(self, offset: Int = 1) -> Token:
         """Look ahead at token without consuming it.
 
         Args:
@@ -89,7 +89,7 @@ struct Parser:
             return Token(TokenKind.EOF(), "", Position(0, 0))
         return self.tokens[peek_pos].copy()
 
-    fn advance(mut self) -> Token:
+    def advance(mut self) -> Token:
         """Consume and return current token.
 
         Returns:
@@ -102,7 +102,7 @@ struct Parser:
         self.pos += 1
         return token^
 
-    fn expect(mut self, expected: TokenKind) raises -> Token:
+    def expect(mut self, expected: TokenKind) raises -> Token:
         """Consume token and verify it matches expected kind.
 
         Args:
@@ -121,12 +121,12 @@ struct Parser:
 
         return self.advance()
 
-    fn skip_newlines_and_comments(mut self):
+    def skip_newlines_and_comments(mut self):
         """Skip over NEWLINE and COMMENT tokens."""
         while self.current().kind == TokenKind.NEWLINE() or self.current().kind == TokenKind.COMMENT():
             _ = self.advance()
 
-    fn parse(mut self) raises -> YamlValue:
+    def parse(mut self) raises -> YamlValue:
         """Parse the token stream into a YamlValue.
 
         Returns:
@@ -143,7 +143,7 @@ struct Parser:
 
         return self.parse_value()
 
-    fn parse_value(mut self) raises -> YamlValue:
+    def parse_value(mut self) raises -> YamlValue:
         """Parse a value (scalar, mapping, or sequence).
 
         Dispatches to appropriate parsing method based on token type.
@@ -167,7 +167,7 @@ struct Parser:
         # Otherwise it's a scalar
         return self.parse_scalar()
 
-    fn parse_scalar(mut self) raises -> YamlValue:
+    def parse_scalar(mut self) raises -> YamlValue:
         """Parse a scalar value.
 
         Returns:
@@ -191,7 +191,7 @@ struct Parser:
         else:
             raise Error("Unexpected token kind for scalar at line " + String(token.pos.line))
 
-    fn parse_mapping(mut self) raises -> YamlValue:
+    def parse_mapping(mut self) raises -> YamlValue:
         """Parse a mapping (dictionary).
 
         Returns:
@@ -249,7 +249,7 @@ struct Parser:
 
         return YamlValue.mapping(result^)
 
-    fn parse_sequence(mut self) raises -> YamlValue:
+    def parse_sequence(mut self) raises -> YamlValue:
         """Parse a sequence (list).
 
         Returns:

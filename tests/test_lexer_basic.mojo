@@ -1,10 +1,10 @@
 """Basic tests for YAML lexer - position tracking and character navigation."""
 
-from testing import assert_equal, assert_true, TestSuite
+from std.testing import assert_equal, assert_true, TestSuite
 from yaml.lexer import Lexer, Token, TokenKind, Position
 
 
-def test_lexer_initialization():
+def test_lexer_initialization() raises:
     """Test lexer initialises correctly."""
     var lexer = Lexer("test")
     assert_equal(lexer.pos, 0)
@@ -12,20 +12,20 @@ def test_lexer_initialization():
     assert_equal(lexer.column, 1)
 
 
-def test_current_character():
+def test_current_character() raises:
     """Test current() returns character without advancing."""
     var lexer = Lexer("abc")
     assert_equal(lexer.current(), "a")
     assert_equal(lexer.pos, 0)  # Should not advance
 
 
-def test_current_at_eof():
+def test_current_at_eof() raises:
     """Test current() returns empty string at EOF."""
     var lexer = Lexer("")
     assert_equal(lexer.current(), "")
 
 
-def test_peek_character():
+def test_peek_character() raises:
     """Test peek() looks ahead without advancing."""
     var lexer = Lexer("abc")
     assert_equal(lexer.peek(1), "b")
@@ -33,13 +33,13 @@ def test_peek_character():
     assert_equal(lexer.pos, 0)  # Should not advance
 
 
-def test_peek_at_eof():
+def test_peek_at_eof() raises:
     """Test peek() returns empty string when out of bounds."""
     var lexer = Lexer("a")
     assert_equal(lexer.peek(5), "")
 
 
-def test_advance_character():
+def test_advance_character() raises:
     """Test advance() consumes character and updates position."""
     var lexer = Lexer("abc")
     assert_equal(lexer.advance(), "a")
@@ -49,7 +49,7 @@ def test_advance_character():
     assert_equal(lexer.pos, 2)
 
 
-def test_advance_newline():
+def test_advance_newline() raises:
     """Test advance() handles newlines correctly."""
     var lexer = Lexer("a\nb")
     _ = lexer.advance()  # 'a'
@@ -65,7 +65,7 @@ def test_advance_newline():
     assert_equal(lexer.column, 2)
 
 
-def test_count_leading_spaces():
+def test_count_leading_spaces() raises:
     """Test count_leading_spaces() counts indentation."""
     var lexer1 = Lexer("  text")
     assert_equal(lexer1.count_leading_spaces(), 2)
@@ -77,7 +77,7 @@ def test_count_leading_spaces():
     assert_equal(lexer3.count_leading_spaces(), 0)
 
 
-def test_skip_whitespace():
+def test_skip_whitespace() raises:
     """Test skip_whitespace() skips spaces but not newlines."""
     var lexer = Lexer("   \t  a")
     lexer.skip_whitespace()
@@ -88,7 +88,7 @@ def test_skip_whitespace():
     assert_equal(lexer2.current(), "\n")  # Should stop at newline
 
 
-def test_tokenize_empty():
+def test_tokenize_empty() raises:
     """Test tokenize() on empty input."""
     var lexer = Lexer("")
     var tokens = lexer.tokenize()
@@ -96,6 +96,6 @@ def test_tokenize_empty():
     assert_true(tokens[0].kind == TokenKind.EOF())
 
 
-def main():
+def main() raises:
     # Automatic test discovery and execution using TestSuite
     TestSuite.discover_tests[__functions_in_module()]().run()

@@ -1,9 +1,9 @@
-[project]
+[workspace]
 authors = ["Michael Booth <michael@databooth.com.au>"]
 channels = ["conda-forge", "https://conda.modular.com/max"]
 name = "mojo-yaml"
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
-version = "0.0.1-placeholder"  # Not yet implemented
+version = "0.9.1"
 
 [activation]
 env = { MOJO_PATH = "$PIXI_PROJECT_ROOT/src" }
@@ -26,11 +26,7 @@ build-package = "mkdir -p dist && mojo package src/yaml -o dist/yaml.mojopkg"
 clean = "rm -rf dist __pycache__ .pytest_cache yaml.mojopkg"
 
 # Example tasks
-example-quickstart = "mojo -I src examples/quickstart.mojo"
-example-basic = "mojo -I src examples/basic_usage.mojo"
-example-nested = "mojo -I src examples/nested_data.mojo"
-example-file = "mojo -I src examples/read_file.mojo"
-example-all = { depends-on = ["example-quickstart", "example-basic", "example-nested", "example-file"] }
+examples-all = "python scripts/run_examples.py"
 
 # Benchmark tasks
 benchmark-mojo = "python benchmarks/run_mojo_benchmark.py"
@@ -38,17 +34,17 @@ benchmark-python = "python benchmarks/compare_python.py"
 benchmark-all = { depends-on = ["benchmark-mojo", "benchmark-python"] }
 
 # Code quality tasks
-pre-commit = "pre-commit run --all-files"
-pre-commit-install = "pre-commit install"
+prek = "prek run --all-files"
+prek-install = "prek install -f"
 
 # Release / validation tasks
-validate-recipe = "./scripts/validate-recipe.sh recipe.yaml"
+validate-recipe = "./scripts/validate-recipe.sh packaging/recipe.yaml"
 pre-submit = "python scripts/pre_submit_checklist.py"
 pre-submit-modular-community = "python scripts/pre_submit_checklist.py"
 
 [dependencies]
-max = ">=26.1.0,<27"
+mojo = "==1.0.0"
 python = ">=3.11,<4"  # Required for test runner and benchmarks
-pre-commit = ">=4.5.1,<5"
+prek = ">=0.4.5,<1"
 pyyaml = "*"  # Required for benchmark comparisons
 rattler-build = ">=0.55.1,<0.56"

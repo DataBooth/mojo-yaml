@@ -1,16 +1,16 @@
-from pathlib import Path
-from testing import assert_equal, assert_true, TestSuite
+from std.pathlib import Path
+from std.testing import assert_equal, assert_true, TestSuite
 from yaml import parse
 
 
-fn test_working_fixture() raises:
+def test_working_fixture() raises:
     print("Testing yaml_lite_working.yaml")
     print("="*60)
 
     var p = Path("fixtures/yaml_lite_working.yaml")
     var content = p.read_text()
 
-    print("File size:", len(content), "bytes")
+    print("File size:", content.byte_length(), "bytes")
 
     var result = parse(content)
     print("✅ PARSING SUCCEEDED!")
@@ -22,7 +22,7 @@ fn test_working_fixture() raises:
     assert_equal(result.get("version").as_string(), "0.1.0")
 
     var desc = result.get("description").as_string()
-    assert_true(len(desc) > 0)
+    assert_true(desc.byte_length() > 0)
 
     var server = result.get("server")
     assert_equal(server.get("host").as_string(), "localhost")
@@ -44,5 +44,5 @@ fn test_working_fixture() raises:
     print("✅ All field access successful!")
 
 
-fn main() raises:
+def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()

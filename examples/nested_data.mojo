@@ -6,7 +6,7 @@ Demonstrates navigating nested mappings and sequences.
 from yaml import parse
 
 
-fn main() raises:
+def main() raises:
     var yaml_str = """
 config:
   database:

@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Bumped MAX / Mojo toolchain dependency to `max ">=26.1.0,<27"` and updated recipes to pin `mojo_version = "=0.26.1"`.
-- Updated the YAML lexer to use a cached `List[String]` buffer plus `codepoint_slices()` instead of direct `String` indexing, matching Mojo 0.26.1 string and `__getitem__` semantics while keeping behaviour identical.
-- Adopted a "no warnings" policy for the core library and tests so future migrations surface only new issues.
+- Migrated workspace/runtime dependencies and recipe compiler pins to Mojo `1.0.0`.
+- Updated source/tests/examples/packaging from legacy `fn` syntax and older imports to Mojo 1.0-compatible forms (`def`, `std.pathlib`, `std.math`, `std.python`).
+- Reworked recursive `YamlValue` storage for Mojo 1.0 by boxing sequence/mapping members and implementing explicit deep-copy/deinit ownership handling.
+- Fixed remaining Mojo 1.0 string API incompatibilities (`len(String)` and quoted-string bounds checks) in lexer/tests.
+- Revalidated migration with `pixi run test-all` (all 15 suites passing) and `pixi run build-package` (success with warnings only).
 
 **Status:** Ready for v0.1.0 release
 

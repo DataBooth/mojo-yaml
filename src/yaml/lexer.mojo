@@ -37,10 +37,10 @@ raw characters, making YAML syntax rules easier to implement.
 - Scalars: Quoted strings, unquoted strings, numbers, booleans, null
 """
 
-from collections import List
+from std.collections import List
 
 
-fn to_chars(text: String) -> List[String]:
+def to_chars(text: String) -> List[String]:
     """Convert a String into a list of single-codepoint Strings."""
     var chars = List[String]()
     for slice in text.codepoint_slices():
@@ -48,8 +48,7 @@ fn to_chars(text: String) -> List[String]:
     return chars^
 
 
-@register_passable("trivial")
-struct Position:
+struct Position(Copyable, Movable):
     """Position in the source file (line and column).
 
     Used for error messages to show users exactly where parsing failed.
@@ -58,94 +57,99 @@ struct Position:
     var line: Int
     var column: Int
 
-    fn __init__(out self, line: Int, column: Int):
+    def __init__(out self, line: Int, column: Int):
         self.line = line
         self.column = column
 
+    def copy(self) -> Self:
+        return Position(self.line, self.column)
 
-@register_passable("trivial")
-struct TokenKind:
+
+struct TokenKind(Copyable, Movable):
     """Token types for YAML lexer.
 
     YAML uses indentation for structure, unlike INI/TOML which use brackets.
     """
     var _value: Int
 
-    fn __init__(out self, value: Int):
+    def __init__(out self, value: Int):
         self._value = value
+
+    def copy(self) -> Self:
+        return TokenKind(self._value)
 
     # Special tokens
     @staticmethod
-    fn EOF() -> TokenKind:
+    def EOF() -> TokenKind:
         """End of file marker."""
         return TokenKind(0)
 
     @staticmethod
-    fn NEWLINE() -> TokenKind:
+    def NEWLINE() -> TokenKind:
         """Line break (separates elements)."""
         return TokenKind(1)
 
     @staticmethod
-    fn INDENT() -> TokenKind:
+    def INDENT() -> TokenKind:
         """Increased indentation (nesting deeper)."""
         return TokenKind(2)
 
     @staticmethod
-    fn DEDENT() -> TokenKind:
+    def DEDENT() -> TokenKind:
         """Decreased indentation (returning to outer level)."""
         return TokenKind(3)
 
     @staticmethod
-    fn COMMENT() -> TokenKind:
+    def COMMENT() -> TokenKind:
         """Comment text after # symbol."""
         return TokenKind(4)
 
     # Scalars (values)
     @staticmethod
-    fn STRING() -> TokenKind:
+    def STRING() -> TokenKind:
         """String literal: "quoted" or 'quoted' or unquoted."""
         return TokenKind(10)
 
     @staticmethod
-    fn INTEGER() -> TokenKind:
+    def INTEGER() -> TokenKind:
         """Integer: 42, -17, 0."""
         return TokenKind(11)
 
     @staticmethod
-    fn FLOAT() -> TokenKind:
+    def FLOAT() -> TokenKind:
         """Float: 3.14, -0.5, 1.5e10."""
         return TokenKind(12)
 
     @staticmethod
-    fn BOOLEAN() -> TokenKind:
+    def BOOLEAN() -> TokenKind:
         """Boolean: true, false, yes, no."""
         return TokenKind(13)
 
     @staticmethod
-    fn NULL() -> TokenKind:
+    def NULL() -> TokenKind:
         """Null: null, ~."""
         return TokenKind(14)
 
     # Structural elements
     @staticmethod
-    fn KEY() -> TokenKind:
+    def KEY() -> TokenKind:
         """Key name before colon."""
         return TokenKind(20)
 
     @staticmethod
-    fn COLON() -> TokenKind:
+    def COLON() -> TokenKind:
         """Mapping separator: :."""
         return TokenKind(21)
 
     @staticmethod
-    fn DASH() -> TokenKind:
+    def DASH() -> TokenKind:
         """Sequence indicator: -."""
         return TokenKind(22)
 
-    fn __eq__(self, other: TokenKind) -> Bool:
+    def __eq__(self, other: TokenKind) -> Bool:
         return self._value == other._value
 
-    fn __ne__(self, other: TokenKind) -> Bool:
+    def __ne__(self, other: TokenKind) -> Bool:
         return self._value != other._value
 
 
@@ -159,14 +163,14 @@ struct Token(Copyable, Movable):
     var value: String  # The actual text content
     var pos: Position  # Where it appears in the file
 
-    fn __init__(out self, kind: TokenKind, value: String, pos: Position):
-        self.kind = kind
+    def __init__(out self, kind: TokenKind, value: String, pos: Position):
+        self.kind = kind.copy()
         self.value = value
-        self.pos = pos
+        self.pos = pos.copy()
 
-    fn copy(self) -> Self:
+    def copy(self) -> Self:
         """Create a copy of this token."""
-        return Token(self.kind, self.value, self.pos)
+        return Token(self.kind.copy(), self.value, self.pos.copy())
 
 
 struct Lexer:
@@ -194,7 +198,7 @@ struct Lexer:
     var indent_stack: List[Int]  # Track indentation levels for INDENT/DEDENT
     var at_line_start: Bool  # Are we at the start of a line?
 
-    fn __init__(out self, input: String):
+    def __init__(out self, input: String):
         """Initialise lexer with YAML input.
 
         Args:
@@ -209,7 +213,7 @@ struct Lexer:
         self.indent_stack.append(0)  # Base indentation level
         self.at_line_start = True
 
-    fn current(self) -> String:
+    def current(self) -> String:
         """Get current character without advancing.
 
         Returns:
@@ -219,7 +223,7 @@ struct Lexer:
             return ""
         return self.chars[self.pos]
 
-    fn peek(self, offset: Int = 1) -> String:
+    def peek(self, offset: Int = 1) -> String:
         """Look ahead at character without consuming it.
 
         Args:
@@ -233,7 +237,7 @@ struct Lexer:
             return ""
         return self.chars[peek_pos]
 
-    fn advance(mut self) -> String:
+    def advance(mut self) -> String:
         """Consume and return current character.
 
         Advances position and updates line/column tracking for error messages.
@@ -258,7 +262,7 @@ struct Lexer:
 
         return c
 
-    fn count_leading_spaces(self) -> Int:
+    def count_leading_spaces(self) -> Int:
         """Count spaces at start of current line.
 
         Returns:
@@ -277,7 +281,7 @@ struct Lexer:
 
         return count
 
-    fn skip_whitespace(mut self):
+    def skip_whitespace(mut self):
         """Skip whitespace characters (space, tab) but not newlines.
 
         Newlines are significant in YAML for structure.
@@ -289,7 +293,7 @@ struct Lexer:
             else:
                 break
 
-    fn read_comment(mut self) raises -> Token:
+    def read_comment(mut self) raises -> Token:
         """Read a comment starting with #.
 
         Comments run from # to end of line.
@@ -310,7 +314,7 @@ struct Lexer:
 
         return Token(TokenKind.COMMENT(), String(comment.strip()), start_pos)
 
-    fn read_quoted_string(mut self, quote: String) raises -> Token:
+    def read_quoted_string(mut self, quote: String) raises -> Token:
         """Read a quoted string (single or double quotes).
 
         Args:
@@ -326,7 +330,7 @@ struct Lexer:
         _ = self.advance()  # Skip opening quote
 
         var content = String("")
-        while self.pos < len(self.input):
+        while self.pos < len(self.chars):
             var c = self.current()
             if c == quote:
                 _ = self.advance()  # Skip closing quote
@@ -338,19 +342,19 @@ struct Lexer:
 
         raise Error("Unterminated string at end of file")
 
-    fn is_digit(self, c: String) -> Bool:
+    def is_digit(self, c: String) -> Bool:
         """Check if character is a digit."""
         return c >= "0" and c <= "9"
 
-    fn is_alpha(self, c: String) -> Bool:
+    def is_alpha(self, c: String) -> Bool:
         """Check if character is alphabetic."""
         return (c >= "a" and c <= "z") or (c >= "A" and c <= "Z")
 
-    fn is_key_char(self, c: String) -> Bool:
+    def is_key_char(self, c: String) -> Bool:
         """Check if character can be part of an unquoted key."""
         return self.is_alpha(c) or self.is_digit(c) or c == "_" or c == "-"
 
-    fn scan_number(mut self) raises -> Token:
+    def scan_number(mut self) raises -> Token:
         """Scan a number (integer or float).
 
         Returns:
@@ -389,7 +393,7 @@ struct Lexer:
         else:
             return Token(TokenKind.INTEGER(), num_str, start_pos)
 
-    fn scan_unquoted_string(mut self) raises -> Token:
+    def scan_unquoted_string(mut self) raises -> Token:
         """Scan an unquoted string or keyword.
 
         This handles unquoted values, keys, and keywords like true/false/null.
@@ -416,7 +420,7 @@ struct Lexer:
         else:
             return Token(TokenKind.STRING(), trimmed, start_pos)
 
-    fn tokenize(mut self) raises -> List[Token]:
+    def tokenize(mut self) raises -> List[Token]:
         """Tokenise YAML input into token stream.
 
         Returns:

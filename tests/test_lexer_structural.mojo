@@ -1,10 +1,10 @@
 """Tests for structural token patterns in YAML."""
 
-from testing import assert_equal, assert_true, TestSuite
+from std.testing import assert_equal, assert_true, TestSuite
 from yaml.lexer import Lexer, TokenKind
 
 
-def test_simple_sequence():
+def test_simple_sequence() raises:
     """Test tokenisation of simple list."""
     var lexer = Lexer("- apple\n- banana")
     var tokens = lexer.tokenize()
@@ -19,7 +19,7 @@ def test_simple_sequence():
     assert_equal(tokens[4].value, "banana")
 
 
-def test_simple_mapping():
+def test_simple_mapping() raises:
     """Test tokenisation of simple key-value."""
     var lexer = Lexer("name: Alice\nage: 30")
     var tokens = lexer.tokenize()
@@ -38,7 +38,7 @@ def test_simple_mapping():
     assert_equal(tokens[6].value, "30")
 
 
-def test_empty_value():
+def test_empty_value() raises:
     """Test key with empty value."""
     var lexer = Lexer("key:\nother: value")
     var tokens = lexer.tokenize()
@@ -55,7 +55,7 @@ def test_empty_value():
     assert_equal(tokens[5].value, "value")
 
 
-def test_sequence_with_mapping():
+def test_sequence_with_mapping() raises:
     """Test list items containing key-value pairs."""
     var lexer = Lexer("- name: Alice\n  age: 30")
     var tokens = lexer.tokenize()
@@ -77,7 +77,7 @@ def test_sequence_with_mapping():
     assert_equal(tokens[8].value, "30")
 
 
-def test_nested_mapping():
+def test_nested_mapping() raises:
     """Test mapping containing nested mapping."""
     var lexer = Lexer("parent:\n  child: value")
     var tokens = lexer.tokenize()
@@ -96,7 +96,7 @@ def test_nested_mapping():
     assert_equal(tokens[6].value, "value")
 
 
-def test_sequence_spacing_variations():
+def test_sequence_spacing_variations() raises:
     """Test different spacing around dashes."""
     # In YAML spec, dash without space is just a string, not a list indicator
     var lexer1 = Lexer("-one")  # No space - treated as string
@@ -113,7 +113,7 @@ def test_sequence_spacing_variations():
     assert_equal(tokens2[1].value, "two")
 
 
-def test_colon_spacing_variations():
+def test_colon_spacing_variations() raises:
     """Test different spacing around colons."""
     var lexer1 = Lexer("key:value")  # No spaces
     var tokens1 = lexer1.tokenize()
@@ -134,6 +134,6 @@ def test_colon_spacing_variations():
     assert_equal(tokens2[2].value, "value")
 
 
-def main():
+def main() raises:
     """Run all structural token tests."""
     TestSuite.discover_tests[__functions_in_module()]().run()

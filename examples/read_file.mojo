@@ -4,10 +4,10 @@ Demonstrates parsing YAML files from disk.
 """
 
 from yaml import parse
-from pathlib import Path
+from std.pathlib import Path
 
 
-fn main() raises:
+def main() raises:
     print("=== Reading YAML from File ===")
 
     # Read the working example fixture
@@ -15,7 +15,7 @@ fn main() raises:
     var content = path.read_text()
 
     print("File:", path)
-    print("Size:", len(content), "bytes")
+    print("Size:", content.byte_length(), "bytes")
     print()
 
     # Parse the content

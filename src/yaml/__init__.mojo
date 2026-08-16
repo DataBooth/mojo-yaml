@@ -27,7 +27,7 @@ from .parser import Parser
 from .value import YamlValue
 
 
-fn parse(content: String) raises -> YamlValue:
+def parse(content: String) raises -> YamlValue:
     """Parse YAML string into YamlValue.
 
     Args:

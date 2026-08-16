@@ -1,11 +1,11 @@
 """Tests for nested YAML structure parsing."""
 
-from testing import assert_equal, assert_true, TestSuite
+from std.testing import assert_equal, assert_true, TestSuite
 from yaml.lexer import Lexer
 from yaml.parser import Parser
 
 
-def test_nested_mapping():
+def test_nested_mapping() raises:
     """Test parsing nested mappings."""
     var lexer = Lexer("parent:\n  child: value")
     var tokens = lexer.tokenize()
@@ -18,7 +18,7 @@ def test_nested_mapping():
     assert_equal(parent.get("child").as_string(), "value")
 
 
-def test_deeply_nested_mapping():
+def test_deeply_nested_mapping() raises:
     """Test parsing deeply nested mappings."""
     var lexer = Lexer("level1:\n  level2:\n    level3: deep_value")
     var tokens = lexer.tokenize()
@@ -31,7 +31,7 @@ def test_deeply_nested_mapping():
     assert_equal(level2.get("level3").as_string(), "deep_value")
 
 
-def test_mapping_with_sequence():
+def test_mapping_with_sequence() raises:
     """Test mapping containing a sequence."""
     var lexer = Lexer("items:\n  - apple\n  - banana")
     var tokens = lexer.tokenize()
@@ -45,7 +45,7 @@ def test_mapping_with_sequence():
     assert_equal(items.get_at(1).as_string(), "banana")
 
 
-def test_sequence_of_mappings():
+def test_sequence_of_mappings() raises:
     """Test sequence containing mappings."""
     var lexer = Lexer("- name: Alice\n  age: 30\n- name: Bob\n  age: 25")
     var tokens = lexer.tokenize()
@@ -62,7 +62,7 @@ def test_sequence_of_mappings():
     assert_equal(person2.get("age").as_int(), 25)
 
 
-def test_complex_nested_structure():
+def test_complex_nested_structure() raises:
     """Test complex nested structure with mappings and sequences."""
     var yaml = """config:
   servers:
@@ -96,7 +96,7 @@ def test_complex_nested_structure():
     assert_equal(config.get("enabled").as_bool(), True)
 
 
-def test_multiple_top_level_keys():
+def test_multiple_top_level_keys() raises:
     """Test multiple top-level keys with nested values."""
     var yaml = """api:
   endpoint: /users
@@ -121,7 +121,7 @@ database:
     assert_equal(db.get("port").as_int(), 5432)
 
 
-def test_mixed_scalar_types():
+def test_mixed_scalar_types() raises:
     """Test nested structure with mixed scalar types."""
     var yaml = """settings:
   name: app
@@ -145,6 +145,6 @@ def test_mixed_scalar_types():
     assert_true(settings.get("timeout").is_null())
 
 
-def main():
+def main() raises:
     """Run all nested structure tests."""
     TestSuite.discover_tests[__functions_in_module()]().run()
