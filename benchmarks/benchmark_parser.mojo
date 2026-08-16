@@ -5,10 +5,10 @@ Measures parsing performance with various YAML Lite document sizes and complexit
 
 from time import perf_counter
 from yaml import parse
-from pathlib import Path
+from std.pathlib import Path
 
 
-fn format_time(seconds: Float64) -> String:
+def format_time(seconds: Float64) -> String:
     """Format time in appropriate units."""
     if seconds < 0.001:
         return String(Int(seconds * 1_000_000)) + " μs"
@@ -18,7 +18,7 @@ fn format_time(seconds: Float64) -> String:
         return String(seconds) + " s"
 
 
-fn benchmark_simple_sequence() raises:
+def benchmark_simple_sequence() raises:
     """Benchmark simple sequence parsing."""
     var yaml_content = """- apple
 - banana
@@ -42,7 +42,7 @@ fn benchmark_simple_sequence() raises:
     print("  Rate:", Int(Float64(iterations) / elapsed), "parses/sec")
 
 
-fn benchmark_simple_mapping() raises:
+def benchmark_simple_mapping() raises:
     """Benchmark simple mapping parsing."""
     var yaml_content = """name: Alice
 age: 30
@@ -66,7 +66,7 @@ active: true
     print("  Rate:", Int(Float64(iterations) / elapsed), "parses/sec")
 
 
-fn benchmark_sequence_of_mappings() raises:
+def benchmark_sequence_of_mappings() raises:
     """Benchmark sequence of mappings (common pattern)."""
     var yaml_content = """- name: Alice
   age: 30
@@ -94,7 +94,7 @@ fn benchmark_sequence_of_mappings() raises:
     print("  Rate:", Int(Float64(iterations) / elapsed), "parses/sec")
 
 
-fn benchmark_nested_structure() raises:
+def benchmark_nested_structure() raises:
     """Benchmark nested mappings and sequences."""
     var yaml_content = """database:
   host: localhost
@@ -124,7 +124,7 @@ fn benchmark_nested_structure() raises:
     print("  Rate:", Int(Float64(iterations) / elapsed), "parses/sec")
 
 
-fn benchmark_large_document() raises:
+def benchmark_large_document() raises:
     """Benchmark larger document with mixed complexity."""
     var yaml_content = """users:
   - name: Alice
@@ -178,7 +178,7 @@ database:
     print("  Rate:", Int(Float64(iterations) / elapsed), "parses/sec")
 
 
-fn benchmark_real_yaml_lite() raises:
+def benchmark_real_yaml_lite() raises:
     """Benchmark real-world yaml_lite_working.yaml if it exists."""
     try:
         var path = Path("fixtures/yaml_lite_working.yaml")
@@ -201,7 +201,7 @@ fn benchmark_real_yaml_lite() raises:
         print("\nReal-world yaml_lite_working.yaml: SKIPPED (file not found)")
 
 
-fn benchmark_pre_commit() raises:
+def benchmark_pre_commit() raises:
     """Benchmark real-world pre_commit.yaml if it exists."""
     try:
         var path = Path("fixtures/pre_commit.yaml")
@@ -224,7 +224,7 @@ fn benchmark_pre_commit() raises:
         print("\nReal-world pre_commit.yaml: SKIPPED (file not found)")
 
 
-fn main() raises:
+def main() raises:
     """Run all benchmarks."""
     print("=" * 60)
     print("mojo-yaml Performance Benchmark")

@@ -3,11 +3,11 @@
 Validates INDENT/DEDENT token emission based on indentation changes.
 """
 
-from testing import assert_equal, assert_true, TestSuite
+from std.testing import assert_equal, assert_true, TestSuite
 from yaml.lexer import Lexer, TokenKind
 
 
-def test_simple_indent():
+def test_simple_indent() raises:
     """Test single level of indentation."""
     var lexer = Lexer("parent:\n  child: value")
     var tokens = lexer.tokenize()
@@ -27,7 +27,7 @@ def test_simple_indent():
     assert_true(tokens[7].kind == TokenKind.DEDENT())
 
 
-def test_simple_dedent():
+def test_simple_dedent() raises:
     """Test dedent back to base level."""
     var lexer = Lexer("outer:\n  inner: 1\nback: 2")
     var tokens = lexer.tokenize()
@@ -48,7 +48,7 @@ def test_simple_dedent():
     assert_true(tokens[11].kind == TokenKind.INTEGER())  # 2
 
 
-def test_multiple_indent_levels():
+def test_multiple_indent_levels() raises:
     """Test nested indentation (multiple levels)."""
     var lexer = Lexer("a:\n  b:\n    c: value")
     var tokens = lexer.tokenize()
@@ -66,7 +66,7 @@ def test_multiple_indent_levels():
     assert_true(tokens[12].kind == TokenKind.DEDENT())
 
 
-def test_multiple_dedents():
+def test_multiple_dedents() raises:
     """Test dedenting multiple levels at once."""
     var lexer = Lexer("a:\n  b:\n    c: 1\nback: 2")
     var tokens = lexer.tokenize()
@@ -80,7 +80,7 @@ def test_multiple_dedents():
     assert_equal(dedent_count, 2)
 
 
-def test_blank_line_ignored():
+def test_blank_line_ignored() raises:
     """Test that blank lines don't affect indentation."""
     var lexer = Lexer("parent:\n\n  child: value")
     var tokens = lexer.tokenize()
@@ -98,7 +98,7 @@ def test_blank_line_ignored():
     assert_equal(dedent_count, 1)
 
 
-def test_comment_line_ignored():
+def test_comment_line_ignored() raises:
     """Test that comment-only lines don't affect indentation."""
     var lexer = Lexer("parent:\n  # comment\n  child: value")
     var tokens = lexer.tokenize()
@@ -116,7 +116,7 @@ def test_comment_line_ignored():
     assert_equal(dedent_count, 1)
 
 
-def test_list_with_indented_items():
+def test_list_with_indented_items() raises:
     """Test list items with nested content."""
     var lexer = Lexer("items:\n  - name: Alice\n    age: 30")
     var tokens = lexer.tokenize()
@@ -131,7 +131,7 @@ def test_list_with_indented_items():
     assert_true(tokens[5].kind == TokenKind.STRING())  # name
 
 
-def test_same_indent_no_tokens():
+def test_same_indent_no_tokens() raises:
     """Test that same indentation level doesn't emit tokens."""
     var lexer = Lexer("key1: val1\nkey2: val2")
     var tokens = lexer.tokenize()
@@ -142,7 +142,7 @@ def test_same_indent_no_tokens():
         assert_true(tokens[i].kind != TokenKind.DEDENT())
 
 
-def test_dedent_at_eof():
+def test_dedent_at_eof() raises:
     """Test that DEDENT tokens are emitted at EOF."""
     var lexer = Lexer("a:\n  b:\n    c: value")
     var tokens = lexer.tokenize()
@@ -160,7 +160,7 @@ def test_dedent_at_eof():
     assert_equal(dedent_count, 2)
 
 
-def test_mixed_indentation_with_lists():
+def test_mixed_indentation_with_lists() raises:
     """Test complex structure with mappings and sequences."""
     var lexer = Lexer("config:\n  servers:\n    - host: localhost\n      port: 8080")
     var tokens = lexer.tokenize()
@@ -179,6 +179,6 @@ def test_mixed_indentation_with_lists():
     assert_equal(dedent_count, 3)
 
 
-def main():
+def main() raises:
     """Run all indentation tests."""
     TestSuite.discover_tests[__functions_in_module()]().run()

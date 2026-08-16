@@ -1,6 +1,6 @@
 from yaml import parse
 
-fn main() raises:
+def main() raises:
     # Parse a simple YAML document using the public API
     # Use a simple top-level mapping that is already covered by parser tests.
     var yaml_str = """

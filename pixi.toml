@@ -1,4 +1,4 @@
-[project]
+[workspace]
 authors = ["Michael Booth <michael@databooth.com.au>"]
 channels = ["conda-forge", "https://conda.modular.com/max"]
 name = "mojo-yaml"
@@ -34,8 +34,8 @@ benchmark-python = "python benchmarks/compare_python.py"
 benchmark-all = { depends-on = ["benchmark-mojo", "benchmark-python"] }
 
 # Code quality tasks
-pre-commit = "pre-commit run --all-files"
-pre-commit-install = "pre-commit install"
+prek = "prek run --all-files"
+prek-install = "prek install -f"
 
 # Release / validation tasks
 validate-recipe = "./scripts/validate-recipe.sh packaging/recipe.yaml"
@@ -43,8 +43,8 @@ pre-submit = "python scripts/pre_submit_checklist.py"
 pre-submit-modular-community = "python scripts/pre_submit_checklist.py"
 
 [dependencies]
-max = ">=26.1.0,<27"
+mojo = "==1.0.0"
 python = ">=3.11,<4"  # Required for test runner and benchmarks
-pre-commit = ">=4.5.1,<5"
+prek = ">=0.4.5,<1"
 pyyaml = "*"  # Required for benchmark comparisons
 rattler-build = ">=0.55.1,<0.56"

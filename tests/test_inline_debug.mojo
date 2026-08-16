@@ -1,7 +1,7 @@
-from testing import TestSuite
+from std.testing import TestSuite
 from yaml.lexer import Lexer, TokenKind
 
-fn test_inline_list_mapping_debug() raises:
+def test_inline_list_mapping_debug() raises:
     print("Debugging inline list-mapping pattern")
     print("="*60)
 
@@ -42,5 +42,5 @@ fn test_inline_list_mapping_debug() raises:
         print(i, ":", kind_str, "  value:", repr(tok.value), "  pos:", tok.pos.line, ":", tok.pos.column)
 
 
-fn main() raises:
+def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()

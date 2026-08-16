@@ -6,7 +6,7 @@ Shows parsing from strings and type-safe access.
 from yaml import parse
 
 
-fn main() raises:
+def main() raises:
     print("=== Basic Parsing ===")
 
     # From string

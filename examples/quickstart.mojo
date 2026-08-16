@@ -6,7 +6,7 @@ Demonstrates basic YAML parsing with nested structures.
 from yaml import parse
 
 
-fn main() raises:
+def main() raises:
     # Parse YAML string
     var config = parse("""
 server:

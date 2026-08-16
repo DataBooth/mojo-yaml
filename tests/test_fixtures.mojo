@@ -4,11 +4,11 @@ These tests verify that real-world YAML files can be parsed correctly.
 As the implementation progresses, these will become full integration tests.
 """
 
-from testing import assert_true, assert_false, assert_equal, TestSuite
+from std.testing import assert_true, assert_false, assert_equal, TestSuite
 from yaml.lexer import Lexer
 
 
-def test_can_read_pre_commit_fixture():
+def test_can_read_pre_commit_fixture() raises:
     """Test that we can read .pre-commit-config.yaml fixture."""
     # For now, just verify the file can be loaded and basic lexer works
     var content = String("""repos:
@@ -25,7 +25,7 @@ def test_can_read_pre_commit_fixture():
     assert_equal(lexer.line, 1)
 
 
-def test_can_read_github_workflow_fixture():
+def test_can_read_github_workflow_fixture() raises:
     """Test that we can read GitHub Actions workflow fixture."""
     var content = String("""name: Tests
 
@@ -43,7 +43,7 @@ jobs:
     assert_equal(lexer.line, 1)
 
 
-def test_can_read_docker_compose_fixture():
+def test_can_read_docker_compose_fixture() raises:
     """Test that we can read docker-compose.yaml fixture."""
     var content = String("""version: '3.8'
 
@@ -58,7 +58,7 @@ services:
     assert_equal(lexer.pos, 0)
 
 
-def test_yaml_lite_example_structure():
+def test_yaml_lite_example_structure() raises:
     """Test the yaml_lite_example.yaml fixture structure."""
     # This tests the example from fixtures/yaml_lite_example.yaml
     var content = String("""name: mojo-yaml
@@ -78,7 +78,7 @@ server:
     assert_equal(lexer.current(), "a")
 
 
-def test_multiline_yaml():
+def test_multiline_yaml() raises:
     """Test YAML with multiple levels of nesting."""
     var content = String("""config:
   api:
@@ -98,7 +98,7 @@ def test_multiline_yaml():
     assert_equal(lexer.count_leading_spaces(), 0)
 
 
-def test_yaml_with_lists():
+def test_yaml_with_lists() raises:
     """Test YAML with list items."""
     var content = String("""features:
   - block-style
@@ -114,7 +114,7 @@ def test_yaml_with_lists():
     assert_equal(c, "f")
 
 
-def test_yaml_with_quoted_strings():
+def test_yaml_with_quoted_strings() raises:
     """Test YAML with quoted strings."""
     var content = String("""message: "quoted string"
 path: /unquoted/path
@@ -126,7 +126,7 @@ path: /unquoted/path
     assert_equal(first, "m")
 
 
-def test_yaml_with_numbers():
+def test_yaml_with_numbers() raises:
     """Test YAML with numeric values."""
     var content = String("""count: 42
 ratio: 3.14
@@ -139,7 +139,7 @@ negative: -17
     assert_false(lexer.is_digit("a"))
 
 
-def test_yaml_with_booleans():
+def test_yaml_with_booleans() raises:
     """Test YAML with boolean values."""
     var content = String("""enabled: true
 disabled: false
@@ -151,7 +151,7 @@ no_value: no
     assert_equal(lexer.line, 1)
 
 
-def test_yaml_with_null():
+def test_yaml_with_null() raises:
     """Test YAML with null values."""
     var content = String("""empty: null
 tilde: ~
@@ -161,7 +161,7 @@ tilde: ~
     assert_equal(lexer.pos, 0)
 
 
-def test_yaml_with_comments():
+def test_yaml_with_comments() raises:
     """Test YAML with comments."""
     var content = String("""# This is a comment
 key: value  # Inline comment
@@ -173,7 +173,7 @@ key: value  # Inline comment
     assert_equal(lexer.current(), "#")
 
 
-def test_complex_nested_structure():
+def test_complex_nested_structure() raises:
     """Test complex nested YAML structure."""
     var content = String("""root:
   level1:
@@ -187,7 +187,7 @@ def test_complex_nested_structure():
     # Test deep nesting parsing will be added when parser is complete
 
 
-def test_sequence_of_mappings():
+def test_sequence_of_mappings() raises:
     """Test sequence containing mappings (common in config files)."""
     var content = String("""repos:
   - repo: https://example.com/repo1
@@ -200,7 +200,7 @@ def test_sequence_of_mappings():
     assert_equal(lexer.pos, 0)
 
 
-def test_empty_lines_handling():
+def test_empty_lines_handling() raises:
     """Test YAML with empty lines."""
     var content = String("""key1: value1
 
@@ -214,7 +214,7 @@ key3: value3
     assert_equal(lexer.line, 1)
 
 
-def test_mixed_indentation_detection():
+def test_mixed_indentation_detection() raises:
     """Test detection of different indentation levels."""
     var content = String("""no_indent: value
   two_spaces: value
@@ -226,6 +226,6 @@ def test_mixed_indentation_detection():
     assert_equal(lexer.count_leading_spaces(), 0)
 
 
-def main():
+def main() raises:
     """Run all fixture tests."""
     TestSuite.discover_tests[__functions_in_module()]().run()

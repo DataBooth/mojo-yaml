@@ -1,7 +1,7 @@
-from testing import TestSuite
+from std.testing import TestSuite
 from yaml import parse
 
-fn test_version_diagnostics() raises:
+def test_version_diagnostics() raises:
     print("Test 1: Unquoted version (should fail)")
     var failed = False
     try:
@@ -22,5 +22,5 @@ fn test_version_diagnostics() raises:
     print("Success:", r2.get("version").as_string())
 
 
-fn main() raises:
+def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()

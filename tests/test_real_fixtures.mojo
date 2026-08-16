@@ -9,12 +9,12 @@ These tests encode the current expectations for the v0.1.0 "Lite" subset:
   that it currently fails so changes are deliberate.
 """
 
-from pathlib import Path
-from testing import assert_true, TestSuite
+from std.pathlib import Path
+from std.testing import assert_true, TestSuite
 from yaml import parse
 
 
-fn test_yaml_lite_example_parses() raises:
+def test_yaml_lite_example_parses() raises:
     """YAML_lite_example.yaml should parse and produce a mapping."""
     var p = Path("fixtures/yaml_lite_example.yaml")
     var content = p.read_text()
@@ -26,7 +26,7 @@ fn test_yaml_lite_example_parses() raises:
     assert_true("server" in result.mapping_value)
 
 
-fn test_pre_commit_expected_failure() raises:
+def test_pre_commit_expected_failure() raises:
     """Pre-commit.yaml currently fails due to flow-style list; assert failure."""
     var p = Path("fixtures/pre_commit.yaml")
     var content = p.read_text()
@@ -42,7 +42,7 @@ fn test_pre_commit_expected_failure() raises:
         raise Error("Expected parse failure for pre_commit.yaml (flow-style list)")
 
 
-fn test_github_workflow_expected_failure() raises:
+def test_github_workflow_expected_failure() raises:
     """GitHub_workflow.yaml is outside the Lite subset; MUST fail for now."""
     var p = Path("fixtures/github_workflow.yaml")
     var content = p.read_text()
@@ -58,7 +58,7 @@ fn test_github_workflow_expected_failure() raises:
         raise Error("Expected parse failure for github_workflow.yaml (flow-style + expressions)")
 
 
-fn test_docker_compose_expected_failure() raises:
+def test_docker_compose_expected_failure() raises:
     """Docker_compose.yaml currently fails (quotes, mixed styles); assert failure."""
     var p = Path("fixtures/docker_compose.yaml")
     var content = p.read_text()
@@ -74,5 +74,5 @@ fn test_docker_compose_expected_failure() raises:
         raise Error("Expected parse failure for docker_compose.yaml in v0.1.0 Lite")
 
 
-fn main() raises:
+def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()
